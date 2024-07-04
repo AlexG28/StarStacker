@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image"
 	"image/jpeg"
 	"os"
 )
@@ -40,6 +41,9 @@ func main() {
 		fmt.Println("Unable to write result to file")
 		os.Exit(1)
 	}
+
+	newGrayScaleImg := toGrayScale(&img)
+	saveOutputImage(&newGrayScaleImg, "grayscale")
 }
 
 func writeOutput(text string, filename string) error {
@@ -54,6 +58,25 @@ func writeOutput(text string, filename string) error {
 	_, err = file.WriteString(text)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func saveOutputImage(img *image.Image, filename string) error {
+	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.jpg", filename)
+
+	file, err := os.Create(filepath)
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	err = jpeg.Encode(file, *img, nil)
+
+	if err != nil {
+		panic(err)
 	}
 
 	return nil
