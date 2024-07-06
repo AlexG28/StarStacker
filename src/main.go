@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"image"
-	"image/jpeg"
+	"image/png"
 	"os"
 )
 
@@ -12,21 +12,21 @@ func main() {
 	fmt.Printf("the filenames are: %v\n", argsWithProg)
 
 	filename := argsWithProg[0]
-	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.jpg", filename)
+	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.png", filename)
 
 	file, err := os.Open(filepath)
 
 	if err != nil {
-		fmt.Println("unable to open jpeg")
+		fmt.Println("unable to open png")
 		os.Exit(1)
 	}
 
 	defer file.Close()
 
-	img, err := jpeg.Decode(file)
+	img, err := png.Decode(file)
 
 	if err != nil {
-		fmt.Println("Unable to decode jpeg")
+		fmt.Println("Unable to decode png")
 		os.Exit(1)
 	}
 
@@ -43,7 +43,10 @@ func main() {
 	}
 
 	newGrayScaleImg := toGrayScale(&img)
-	saveOutputImage(&newGrayScaleImg, "grayscale")
+	saveOutputImage(newGrayScaleImg, "grayscale")
+
+	newTest := toBinary(newGrayScaleImg, 30)
+	saveOutputImage(newTest, "binary")
 }
 
 func writeOutput(text string, filename string) error {
@@ -63,8 +66,8 @@ func writeOutput(text string, filename string) error {
 	return nil
 }
 
-func saveOutputImage(img *image.Image, filename string) error {
-	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.jpg", filename)
+func saveOutputImage(img *image.Gray, filename string) error {
+	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.png", filename)
 
 	file, err := os.Create(filepath)
 	if err != nil {
@@ -73,7 +76,7 @@ func saveOutputImage(img *image.Image, filename string) error {
 
 	defer file.Close()
 
-	err = jpeg.Encode(file, *img, nil)
+	err = png.Encode(file, img)
 
 	if err != nil {
 		panic(err)
