@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"image/jpeg"
+	"image/png"
 	"os"
 )
 
@@ -11,21 +11,21 @@ func main() {
 	fmt.Printf("the filenames are: %v\n", argsWithProg)
 
 	filename := argsWithProg[0]
-	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.jpg", filename)
+	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.png", filename)
 
 	file, err := os.Open(filepath)
 
 	if err != nil {
-		fmt.Println("unable to open jpeg")
+		fmt.Println("unable to open png")
 		os.Exit(1)
 	}
 
 	defer file.Close()
 
-	img, err := jpeg.Decode(file)
+	img, err := png.Decode(file)
 
 	if err != nil {
-		fmt.Println("Unable to decode jpeg")
+		fmt.Println("Unable to decode png")
 		os.Exit(1)
 	}
 
@@ -40,21 +40,10 @@ func main() {
 		fmt.Println("Unable to write result to file")
 		os.Exit(1)
 	}
-}
 
-func writeOutput(text string, filename string) error {
-	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.txt", filename)
-	file, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
+	newGrayScaleImg := toGrayScale(&img)
+	saveOutputImage(newGrayScaleImg, "grayscale")
 
-	defer file.Close()
-
-	_, err = file.WriteString(text)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	newTest := toBinary(newGrayScaleImg, 30)
+	saveOutputImage(newTest, "binary")
 }
