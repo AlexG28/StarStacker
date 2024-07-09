@@ -15,6 +15,9 @@ jobs:
 
     - name: Get dependencies
       run: go mod download
+    
+    - name: Go into src
+      run: cd src/
 
     - name: Run tests
       run: go test
