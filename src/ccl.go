@@ -30,7 +30,7 @@ func bfs(x, y int, visited *[][]int, img *image.Gray) [][2]int {
 	var star [][2]int
 	star = append(star, [2]int{x, y})
 
-	(*visited)[y][x] = 100
+	(*visited)[y][x] = 1
 
 	queue := make(Queue, 0)
 	queue.enqueue([2]int{x, y})
