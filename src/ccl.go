@@ -58,8 +58,8 @@ func bfs(x, y int, visited *[][]int, img *image.Gray, label int) [][2]int {
 }
 
 func getAdjacentPoints(x, y int, visited *[][]int, img *image.Gray) [][2]int {
-	maxY := len(*visited)
-	maxX := len((*visited)[0])
+	maxX := len(*visited)
+	maxY := len((*visited)[0])
 
 	directions := [][2]int{
 		{-1, -1}, {-1, 0}, {-1, 1},
@@ -93,7 +93,7 @@ func getAdjacentPoints(x, y int, visited *[][]int, img *image.Gray) [][2]int {
 	return adjacentPoints
 }
 
-func createVisited(w, h int) *[][]int {
+func createVisited(h, w int) *[][]int {
 	visited := make([][]int, h)
 	for i := range visited {
 		visited[i] = make([]int, w)
