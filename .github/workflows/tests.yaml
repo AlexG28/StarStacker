@@ -16,9 +16,6 @@ jobs:
     - name: Get dependencies
       run: go mod download
     
-    - name: print path 
-      run: pwd
-
     - name: Run tests
       run: go test
       working-directory: src/

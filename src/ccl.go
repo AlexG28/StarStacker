@@ -18,7 +18,7 @@ func countStars(img *image.Gray) int {
 			case white && labelled:
 				continue
 			case white && !labelled:
-				res := bfs(x, y, &visited)
+				res := bfs(x, y, &visited, img)
 				fmt.Printf("res: %v\n", res)
 			}
 		}
@@ -26,25 +26,26 @@ func countStars(img *image.Gray) int {
 	return count
 }
 
-func bfs(x, y int, visited *[][]int) []image.Point {
-	star := make([]image.Point, 5)
-	star = append(star, image.Point{x, y})
+func bfs(x, y int, visited *[][]int, img *image.Gray) [][2]int {
+	var star [][2]int
+	star = append(star, [2]int{x, y})
+
 	(*visited)[y][x] = 100
 
 	queue := make(Queue, 0)
-	queue.enqueue(image.Point{x, y})
+	queue.enqueue([2]int{x, y})
 
 	for !queue.isEmpty() {
 		elem, ok := queue.dequeue()
 		if ok {
-			point := elem.(image.Point)
-			adjacentPoints := getAdjacentPoints(point.X, point.Y, visited)
+			point := elem.([2]int)
+			adjacentPoints := getAdjacentPoints(point[0], point[1], visited, img)
 
 			for _, neighbour := range adjacentPoints {
-				visitedNeighbour := (*visited)[neighbour[1]][neighbour[0]] != 0
+				visitedNeighbour := (*visited)[neighbour[0]][neighbour[1]] != 0
 				if !visitedNeighbour {
-					(*visited)[neighbour[1]][neighbour[0]] = 1
-					newPoint := image.Point{neighbour[0], neighbour[1]}
+					(*visited)[neighbour[0]][neighbour[1]] = 1
+					newPoint := [2]int{neighbour[0], neighbour[1]}
 					queue.enqueue(newPoint)
 					star = append(star, newPoint)
 				}
@@ -55,7 +56,7 @@ func bfs(x, y int, visited *[][]int) []image.Point {
 	return star
 }
 
-func getAdjacentPoints(x, y int, visited *[][]int) [][2]int {
+func getAdjacentPoints(x, y int, visited *[][]int, img *image.Gray) [][2]int {
 	maxY := len(*visited)
 	maxX := len((*visited)[0])
 
@@ -75,19 +76,17 @@ func getAdjacentPoints(x, y int, visited *[][]int) [][2]int {
 
 		if !validX || !validY {
 			continue
+		} else {
+			if (*visited)[newX][newY] != 0 {
+				continue
+			}
+
+			if img.GrayAt(newX, newY).Y == 0 {
+				continue
+			}
 		}
 
-		if validX {
-			validX = (*visited)[newX][newY] == 0
-		}
-
-		if validY {
-			validY = (*visited)[newX][newY] == 0
-		}
-
-		if validX && validY {
-			adjacentPoints = append(adjacentPoints, [2]int{newX, newY})
-		}
+		adjacentPoints = append(adjacentPoints, [2]int{newX, newY})
 	}
 
 	return adjacentPoints
