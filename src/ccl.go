@@ -9,8 +9,8 @@ func countStars(img *image.Gray) int {
 	bounds := img.Bounds()
 	visited := *createVisited(bounds.Max.X, bounds.Max.Y)
 	count := 0
-	for y := range bounds.Max.Y {
-		for x := range bounds.Max.X {
+	for x := range bounds.Max.X {
+		for y := range bounds.Max.Y {
 			white := img.GrayAt(x, y).Y == 255
 			labelled := visited[x][y] != 0
 
@@ -18,7 +18,8 @@ func countStars(img *image.Gray) int {
 			case white && labelled:
 				continue
 			case white && !labelled:
-				res := bfs(x, y, &visited, img)
+				count += 1
+				res := bfs(x, y, &visited, img, count)
 				fmt.Printf("res: %v\n", res)
 			}
 		}
@@ -26,11 +27,11 @@ func countStars(img *image.Gray) int {
 	return count
 }
 
-func bfs(x, y int, visited *[][]int, img *image.Gray) [][2]int {
+func bfs(x, y int, visited *[][]int, img *image.Gray, label int) [][2]int {
 	var star [][2]int
 	star = append(star, [2]int{x, y})
 
-	(*visited)[y][x] = 1
+	(*visited)[x][y] = label
 
 	queue := make(Queue, 0)
 	queue.enqueue([2]int{x, y})
@@ -44,7 +45,7 @@ func bfs(x, y int, visited *[][]int, img *image.Gray) [][2]int {
 			for _, neighbour := range adjacentPoints {
 				visitedNeighbour := (*visited)[neighbour[0]][neighbour[1]] != 0
 				if !visitedNeighbour {
-					(*visited)[neighbour[0]][neighbour[1]] = 1
+					(*visited)[neighbour[0]][neighbour[1]] = label
 					newPoint := [2]int{neighbour[0], neighbour[1]}
 					queue.enqueue(newPoint)
 					star = append(star, newPoint)

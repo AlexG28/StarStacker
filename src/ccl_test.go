@@ -277,7 +277,7 @@ func TestBFSBasic(t *testing.T) {
 	x, y := 0, 0
 	img := makeBasicGrayImage(&image)
 
-	result := bfs(x, y, &visited, img)
+	result := bfs(x, y, &visited, img, 1)
 
 	expected := [][2]int{
 		{0, 0},
@@ -312,7 +312,7 @@ func TestBFSBasic2(t *testing.T) {
 	x, y := 0, 0
 	img := makeBasicGrayImage(&image)
 
-	result := bfs(x, y, &visited, img)
+	result := bfs(x, y, &visited, img, 1)
 
 	expected := [][2]int{
 		{0, 0},
@@ -326,6 +326,77 @@ func TestBFSBasic2(t *testing.T) {
 	}
 
 	if !sameAdjacentPoints(expected, result) {
+		t.Errorf("resulted: %v    expected: %v", result, expected)
+	}
+}
+
+func TestBFSBasic3(t *testing.T) { // don't need this???
+	image := [][]int{
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0},
+		{0, 0, 1, 0, 0},
+		{0, 0, 0, 0, 0},
+	}
+
+	visited := [][]int{
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+	}
+
+	x, y := 2, 1
+	img := makeBasicGrayImage(&image)
+
+	result := bfs(x, y, &visited, img, 99)
+
+	expected := [][2]int{
+		{2, 1},
+		{2, 2},
+		{3, 2},
+	}
+
+	if !sameAdjacentPoints(expected, result) {
+		t.Errorf("resulted: %v    expected: %v", result, expected)
+	}
+}
+
+func TestCountStarsWithOneStar(t *testing.T) {
+	image := [][]int{
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 1, 1, 0, 0},
+		{0, 0, 1, 0, 0},
+		{0, 0, 0, 0, 0},
+	}
+
+	img := makeBasicGrayImage(&image)
+
+	result := countStars(img)
+	expected := 1
+
+	if result != expected {
+		t.Errorf("resulted: %v    expected: %v", result, expected)
+	}
+}
+
+func TestCountStarsWithMultipleStars(t *testing.T) {
+	image := [][]int{
+		{1, 1, 0, 0, 1},
+		{1, 1, 0, 0, 1},
+		{0, 0, 0, 0, 0},
+		{0, 0, 1, 1, 0},
+		{1, 0, 0, 1, 0},
+	}
+
+	img := makeBasicGrayImage(&image)
+
+	result := countStars(img)
+	expected := 4
+
+	if result != expected {
 		t.Errorf("resulted: %v    expected: %v", result, expected)
 	}
 }
