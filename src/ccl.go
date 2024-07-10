@@ -7,7 +7,7 @@ import (
 
 func countStars(img *image.Gray) int {
 	bounds := img.Bounds()
-	visited := createVisited(bounds.Max.X, bounds.Max.Y)
+	visited := *createVisited(bounds.Max.X, bounds.Max.Y)
 	count := 0
 	for y := range bounds.Max.Y {
 		for x := range bounds.Max.X {
@@ -92,10 +92,10 @@ func getAdjacentPoints(x, y int, visited *[][]int, img *image.Gray) [][2]int {
 	return adjacentPoints
 }
 
-func createVisited(w, h int) [][]int {
+func createVisited(w, h int) *[][]int {
 	visited := make([][]int, h)
 	for i := range visited {
 		visited[i] = make([]int, w)
 	}
-	return visited
+	return &visited
 }
