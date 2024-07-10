@@ -257,35 +257,75 @@ func TestGetAdjacentPointsWithNone(t *testing.T) {
 	}
 }
 
-// func TestBFSBasic(t *testing.T) {
-// 	visited := [][]int{
-// 		{1, 0, 0, 0, 0},
-// 		{1, 1, 0, 0, 0},
-// 		{0, 1, 1, 0, 0},
-// 		{0, 0, 0, 0, 0},
-// 		{0, 0, 0, 0, 0},
-// 	}
+func TestBFSBasic(t *testing.T) {
+	image := [][]int{
+		{1, 0, 0, 0, 0},
+		{1, 1, 0, 0, 0},
+		{0, 1, 1, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+	}
 
-// 	x, y := 0, 0
+	visited := [][]int{
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+	}
 
-// 	/*
-// 		getAdjacentPoints needs to also look at the GrayMap values
-// 		so does BFS
-// 		this is clearly not ready yet
+	x, y := 0, 0
+	img := makeBasicGrayImage(&image)
 
-// 	*/
+	result := bfs(x, y, &visited, img)
 
-// 	result := bfs(x, y, &visited)
+	expected := [][2]int{
+		{0, 0},
+		{1, 0},
+		{1, 1},
+		{2, 1},
+		{2, 2},
+	}
 
-// 	expected := [][2]int{
-// 		{0, 0},
-// 		{1, 0},
-// 		{1, 1},
-// 		{2, 1},
-// 		{2, 2},
-// 	}
+	if !sameAdjacentPoints(expected, result) {
+		t.Errorf("resulted: %v    expected: %v", result, expected)
+	}
+}
 
-// 	if !sameAdjacentPoints(expected, result) {
-// 		t.Errorf("resulted: %v    expected: %v", result, expected)
-// 	}
-// }
+func TestBFSBasic2(t *testing.T) {
+	image := [][]int{
+		{1, 0, 0, 0, 0},
+		{1, 1, 0, 0, 0},
+		{0, 1, 1, 0, 0},
+		{0, 0, 1, 1, 1},
+		{0, 0, 0, 0, 0},
+	}
+
+	visited := [][]int{
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 0},
+		{2, 2, 2, 2, 2},
+	}
+
+	x, y := 0, 0
+	img := makeBasicGrayImage(&image)
+
+	result := bfs(x, y, &visited, img)
+
+	expected := [][2]int{
+		{0, 0},
+		{1, 0},
+		{1, 1},
+		{2, 1},
+		{2, 2},
+		{3, 2},
+		{3, 3},
+		{3, 4},
+	}
+
+	if !sameAdjacentPoints(expected, result) {
+		t.Errorf("resulted: %v    expected: %v", result, expected)
+	}
+}
