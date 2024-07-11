@@ -43,7 +43,7 @@ func saveOutputImage(img *image.Gray, filename string) error {
 	return nil
 }
 
-func saveStarPoints(filename string, points []image.Point) error {
+func saveStarPoints(filename string, stars *[]star) error {
 	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.txt", filename)
 
 	file, err := os.Create(filepath)
@@ -53,8 +53,10 @@ func saveStarPoints(filename string, points []image.Point) error {
 
 	defer file.Close()
 
-	for _, point := range points {
-		_, err = file.WriteString(point.String())
+	for _, star := range *stars {
+		// _, err = file.WriteString(star.print())
+		_, err = file.WriteString(star.print())
+
 		if err != nil {
 			return err
 		}

@@ -11,6 +11,10 @@ type star struct {
 	location [2]int
 }
 
+func (s *star) print() string {
+	return fmt.Sprintf("ID: %v\n location: (%v, %v)\n\n", s.id, s.location[0], s.location[1])
+}
+
 func countStars(img *image.Gray) []star {
 	bounds := img.Bounds()
 	visited := *createVisited(bounds.Max.X, bounds.Max.Y)
