@@ -374,7 +374,7 @@ func TestCountStarsWithOneStar(t *testing.T) {
 
 	img := makeBasicGrayImage(&image)
 
-	result := countStars(img)
+	result := len(countStars(img))
 	expected := 1
 
 	if result != expected {
@@ -393,7 +393,7 @@ func TestCountStarsWithMultipleStars(t *testing.T) {
 
 	img := makeBasicGrayImage(&image)
 
-	result := countStars(img)
+	result := len(countStars(img))
 	expected := 4
 
 	if result != expected {

@@ -5,10 +5,17 @@ import (
 	"image"
 )
 
-func countStars(img *image.Gray) int {
+type star struct {
+	id       int
+	points   [][2]int
+	location [2]int
+}
+
+func countStars(img *image.Gray) []star {
 	bounds := img.Bounds()
 	visited := *createVisited(bounds.Max.X, bounds.Max.Y)
 	count := 0
+	var stars []star
 	for x := range bounds.Max.X {
 		for y := range bounds.Max.Y {
 			white := img.GrayAt(x, y).Y == 255
@@ -19,12 +26,15 @@ func countStars(img *image.Gray) int {
 				continue
 			case white && !labelled:
 				count += 1
-				res := bfs(x, y, &visited, img, count)
-				fmt.Printf("res: %v\n", res)
+				points := bfs(x, y, &visited, img, count) // need to do something with this
+				starLocation := calculateStarLocation(points)
+				newStar := star{id: count, points: points, location: starLocation}
+				stars = append(stars, newStar)
+				fmt.Printf("res: %v\n", points)
 			}
 		}
 	}
-	return count
+	return stars
 }
 
 func bfs(x, y int, visited *[][]int, img *image.Gray, label int) [][2]int {
@@ -99,4 +109,16 @@ func createVisited(h, w int) *[][]int {
 		visited[i] = make([]int, w)
 	}
 	return &visited
+}
+
+func calculateStarLocation(points [][2]int) [2]int {
+	sumX, sumY := 0, 0
+	length := len(points)
+
+	for _, point := range points {
+		sumX += point[0]
+		sumY += point[1]
+	}
+
+	return [2]int{sumX / length, sumY / length}
 }
