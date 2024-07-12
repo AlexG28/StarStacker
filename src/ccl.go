@@ -15,7 +15,7 @@ func (s *star) print() string {
 	return fmt.Sprintf("ID: %v\n location: (%v, %v)\n\n", s.id, s.location[0], s.location[1])
 }
 
-func countStars(img *image.Gray) []star {
+func countStars(img *image.Gray) *[]star {
 	bounds := img.Bounds()
 	visited := *createVisited(bounds.Max.X, bounds.Max.Y)
 	count := 0
@@ -37,7 +37,7 @@ func countStars(img *image.Gray) []star {
 			}
 		}
 	}
-	return stars
+	return &stars
 }
 
 func bfs(x, y int, visited *[][]int, img *image.Gray, label int) [][2]int {

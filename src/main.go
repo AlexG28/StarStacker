@@ -41,12 +41,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	newTest2 := toBinary(&img, 30)
-	saveOutputImage(newTest2, "binary")
+	binaryImage := toBinary(&img, 30)
+	saveOutputImage(binaryImage, "binary")
 
-	stars := countStars(newTest2)
-	count := len(stars)
+	stars := countStars(binaryImage)
+	count := len(*stars)
 	fmt.Printf("count: %v\n", count)
 
-	saveStarPoints("stars", &stars)
+	saveStarPoints("stars", stars)
 }
