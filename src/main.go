@@ -41,13 +41,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	newGrayScaleImg := toGrayScale(&img)
-	saveOutputImage(newGrayScaleImg, "grayscale")
+	newTest2 := toBinary(&img, 30)
+	saveOutputImage(newTest2, "binary")
 
-	newTest := toBinary(newGrayScaleImg, 30)
-	saveOutputImage(newTest, "binary")
-
-	stars := countStars(newTest)
+	stars := countStars(newTest2)
 	count := len(stars)
 	fmt.Printf("count: %v\n", count)
 

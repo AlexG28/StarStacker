@@ -54,7 +54,6 @@ func saveStarPoints(filename string, stars *[]star) error {
 	defer file.Close()
 
 	for _, star := range *stars {
-		// _, err = file.WriteString(star.print())
 		_, err = file.WriteString(star.print())
 
 		if err != nil {
