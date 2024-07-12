@@ -30,11 +30,10 @@ func countStars(img *image.Gray) []star {
 				continue
 			case white && !labelled:
 				count += 1
-				points := bfs(x, y, &visited, img, count) // need to do something with this
+				points := bfs(x, y, &visited, img, count)
 				starLocation := calculateStarLocation(points)
 				newStar := star{id: count, points: points, location: starLocation}
 				stars = append(stars, newStar)
-				fmt.Printf("res: %v\n", points)
 			}
 		}
 	}
