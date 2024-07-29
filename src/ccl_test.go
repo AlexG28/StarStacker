@@ -374,7 +374,7 @@ func TestCountStarsWithOneStar(t *testing.T) {
 
 	img := makeBasicGrayImage(&image)
 
-	result := len(countStars(img))
+	result := len(*countStars(img))
 	expected := 1
 
 	if result != expected {
@@ -393,10 +393,27 @@ func TestCountStarsWithMultipleStars(t *testing.T) {
 
 	img := makeBasicGrayImage(&image)
 
-	result := len(countStars(img))
+	result := len(*countStars(img))
 	expected := 4
 
 	if result != expected {
 		t.Errorf("resulted: %v    expected: %v", result, expected)
+	}
+}
+
+func BenchmarkCountStars(b *testing.B) {
+	image := [][]int{
+		{1, 1, 0, 0, 1},
+		{1, 1, 0, 0, 1},
+		{0, 0, 0, 0, 0},
+		{0, 0, 1, 1, 0},
+		{1, 0, 0, 1, 0},
+	}
+
+	img := makeBasicGrayImage(&image)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		countStars(img)
 	}
 }

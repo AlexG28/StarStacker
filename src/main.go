@@ -8,15 +8,13 @@ import (
 
 func main() {
 	argsWithProg := os.Args[1:]
-	fmt.Printf("the filenames are: %v\n", argsWithProg)
-
 	filename := argsWithProg[0]
 	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.png", filename)
 
 	file, err := os.Open(filepath)
 
 	if err != nil {
-		fmt.Println("unable to open png")
+		fmt.Println("Unable to open file")
 		os.Exit(1)
 	}
 
@@ -25,31 +23,16 @@ func main() {
 	img, err := png.Decode(file)
 
 	if err != nil {
-		fmt.Println("Unable to decode png")
+		fmt.Println("Unable to decode file")
 		os.Exit(1)
 	}
 
-	bounds := img.Bounds()
+	binaryImage := toBinary(&img, 30)
+	saveOutputImage(binaryImage, "binary")
 
-	fmt.Printf("bounds: %v\n", bounds)
-
-	toWrite := fmt.Sprintf("The image stretches from (%d, %d) to (%d, %d)", bounds.Min.X, bounds.Min.Y, bounds.Max.X, bounds.Max.Y)
-	err = writeOutput(toWrite, "out")
-
-	if err != nil {
-		fmt.Println("Unable to write result to file")
-		os.Exit(1)
-	}
-
-	newGrayScaleImg := toGrayScale(&img)
-	saveOutputImage(newGrayScaleImg, "grayscale")
-
-	newTest := toBinary(newGrayScaleImg, 30)
-	saveOutputImage(newTest, "binary")
-
-	stars := countStars(newTest)
-	count := len(stars)
+	stars := countStars(binaryImage)
+	count := len(*stars)
 	fmt.Printf("count: %v\n", count)
 
-	saveStarPoints("stars", &stars)
+	saveStarPoints("stars", stars)
 }
