@@ -46,6 +46,10 @@ func (t Triangle) Equals(other interface{}) bool {
 	return true
 }
 
+func (t Triangle) inCircumcircle(other Vertex) bool {
+	return false
+}
+
 func superTriangle(stars []star) Triangle {
 
 	minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
@@ -70,10 +74,66 @@ func superTriangle(stars []star) Triangle {
 	return Triangle{v0, v1, v2}
 }
 
+func circumCenter(tri Triangle) (Vertex, float64) { // centerpoint, radius
+	a := tri.v0
+	b := tri.v1
+	c := tri.v2
+
+	d := 2 * ((a.X * (b.Y - c.Y)) + (b.X * (c.Y - a.Y)) + (c.X * (a.Y - b.Y)))
+
+	centerpoint := Vertex{}
+
+	ax2 := math.Pow(a.X, 2)
+	ay2 := math.Pow(a.Y, 2)
+
+	bx2 := math.Pow(b.X, 2)
+	by2 := math.Pow(b.Y, 2)
+
+	cx2 := math.Pow(c.X, 2)
+	cy2 := math.Pow(c.Y, 2)
+
+	centerpoint.X = ((ax2+ay2)*(b.Y-c.Y) + (bx2+by2)*(c.Y-a.Y) + (cx2+cy2)*(a.Y-b.Y)) / d
+	centerpoint.Y = ((ax2+ay2)*(c.X-b.X) + (bx2+by2)*(a.X-c.X) + (cx2+cy2)*(b.X-a.X)) / d
+
+	d1 := math.Pow(a.X-centerpoint.X, 2)
+	d2 := math.Pow(a.Y-centerpoint.Y, 2)
+
+	radius := math.Sqrt(d1 + d2)
+
+	return centerpoint, radius
+}
+
+func inCircumcircle(tri Triangle) (float64, float64, float64) {
+	// 1. sort the points in counterclockwise
+	// 2. compute the determinant
+
+	return 10.0, 10.0, 10.0
+}
+
+func addVertex(star Vertex, triangles []Triangle) []Triangle {
+	// edges := make([]Edge, 20)
+
+	return triangles
+}
+
 func triangulate(stars []star) []Triangle {
-	a := make([]Triangle, 1)
-	a[0] = Triangle{Vertex{1, 2}, Vertex{1, 2}, Vertex{1, 2}}
-	return a
+	st := superTriangle(stars)
+
+	triangles := make([]Triangle, len(stars))
+	triangles = append(triangles, st)
+
+	for _, star := range stars {
+		starVertex := Vertex{
+			float64(star.location[0]),
+			float64(star.location[1]),
+		}
+		triangles = addVertex(starVertex, triangles)
+	}
+
+	// remove triangles that share edges with super triangle
+
+	return triangles
 }
 
 // https://www.gorillasun.de/blog/bowyer-watson-algorithm-for-delaunay-triangulation/
+// https://www.desmos.com/calculator/0waviug7kx
