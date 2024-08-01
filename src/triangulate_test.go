@@ -115,3 +115,19 @@ func TestCircumCircleLarge(t *testing.T) {
 		t.Errorf("The difference is:   %v", math.Abs(radius-expectedRadius))
 	}
 }
+
+func TestInCircumcircle(t *testing.T) {
+	tri := Triangle{
+		Vertex{3, 4},
+		Vertex{5, 9},
+		Vertex{4, 8},
+	}
+	point := Vertex{10, 20}
+
+	res := inCircumcircle(tri, point)
+	expected := false
+
+	if res != expected {
+		t.Errorf("Incorrect inCircumcircle: %v    expected: %v", res, expected)
+	}
+}

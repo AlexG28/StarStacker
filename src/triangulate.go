@@ -50,8 +50,14 @@ func (t Triangle) inCircumcircle(other Vertex) bool {
 	return false
 }
 
-func superTriangle(stars []star) Triangle {
+func vertexDistance(v1, v2 Vertex) float64 {
+	d1 := math.Pow(v1.X-v2.X, 2)
+	d2 := math.Pow(v1.Y-v2.Y, 2)
 
+	return math.Sqrt(d1 + d2)
+}
+
+func superTriangle(stars []star) Triangle {
 	minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
 
 	for _, star := range stars {
@@ -74,7 +80,7 @@ func superTriangle(stars []star) Triangle {
 	return Triangle{v0, v1, v2}
 }
 
-func circumCenter(tri Triangle) (Vertex, float64) { // centerpoint, radius
+func circumCenter(tri Triangle) (Vertex, float64) {
 	a := tri.v0
 	b := tri.v1
 	c := tri.v2
@@ -95,19 +101,15 @@ func circumCenter(tri Triangle) (Vertex, float64) { // centerpoint, radius
 	centerpoint.X = ((ax2+ay2)*(b.Y-c.Y) + (bx2+by2)*(c.Y-a.Y) + (cx2+cy2)*(a.Y-b.Y)) / d
 	centerpoint.Y = ((ax2+ay2)*(c.X-b.X) + (bx2+by2)*(a.X-c.X) + (cx2+cy2)*(b.X-a.X)) / d
 
-	d1 := math.Pow(a.X-centerpoint.X, 2)
-	d2 := math.Pow(a.Y-centerpoint.Y, 2)
-
-	radius := math.Sqrt(d1 + d2)
+	radius := vertexDistance(centerpoint, a)
 
 	return centerpoint, radius
 }
 
-func inCircumcircle(tri Triangle) (float64, float64, float64) {
-	// 1. sort the points in counterclockwise
-	// 2. compute the determinant
-
-	return 10.0, 10.0, 10.0
+func inCircumcircle(tri Triangle, p Vertex) bool {
+	center, radius := circumCenter(tri)
+	distance := vertexDistance(p, center)
+	return distance <= radius
 }
 
 func addVertex(star Vertex, triangles []Triangle) []Triangle {
@@ -123,11 +125,11 @@ func triangulate(stars []star) []Triangle {
 	triangles = append(triangles, st)
 
 	for _, star := range stars {
-		starVertex := Vertex{
+		point := Vertex{
 			float64(star.location[0]),
 			float64(star.location[1]),
 		}
-		triangles = addVertex(starVertex, triangles)
+		triangles = addVertex(point, triangles)
 	}
 
 	// remove triangles that share edges with super triangle
