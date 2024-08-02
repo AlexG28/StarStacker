@@ -129,32 +129,6 @@ func inCircumcircle(tri Triangle, p Vertex) bool {
 	return distance <= radius
 }
 
-// func uniqueEdge(tri Triangle, badTriangles []Triangle) bool {
-// 	edges := [3]Edge{
-// 		{tri.v0, tri.v1},
-// 		{tri.v1, tri.v2},
-// 		{tri.v2, tri.v0},
-// 	}
-
-// 	for _, edge := range edges {
-
-// 		for _, other := range badTriangles {
-// 			if other == tri {
-// 				continue
-// 			}
-
-// 			e0 := Edge{other.v0, other.v1}
-// 			e1 := Edge{other.v1, other.v2}
-// 			e2 := Edge{other.v2, other.v0}
-
-// 			if edge == e0 || edge == e1 || edge == e2 {
-// 				return true
-// 			}
-// 		}
-// 	}
-// 	return false
-// }
-
 func uniqueEdges(badTriangles []Triangle) []Edge {
 	uniques := make(map[string]struct{})
 	var uniqueEdges []Edge
@@ -178,68 +152,74 @@ func uniqueEdges(badTriangles []Triangle) []Edge {
 	return uniqueEdges
 }
 
-// func triangulate(stars []Vertex) []Triangle {
+func shareVertex(currVertices, superEdges []Vertex) bool {
+	for _, currVertex := range currVertices {
+		for _, superVertex := range superEdges {
+			if currVertex == superVertex {
+				return true
+			}
+		}
+	}
+	return false
+}
 
-// 	st := superTriangle(stars)
+func removeSuperTriangle(triangles []Triangle, st Triangle) []Triangle {
+	remainingTriangles := make([]Triangle, 0)
+	superVertices := []Vertex{st.v0, st.v1, st.v2}
 
-// 	triangulation := make([]Triangle, len(stars))
-// 	triangulation = append(triangulation, st)
+	for _, tri := range triangles {
+		currVertices := []Vertex{tri.v0, tri.v1, tri.v2}
 
-// 	for _, point := range stars {
-// 		badTriangles := make([]Triangle, 1)
+		if !shareVertex(superVertices, currVertices) {
+			remainingTriangles = append(remainingTriangles, tri)
+		}
+	}
 
-// 		for _, tri := range triangulation {
-// 			if inCircumcircle(tri, point) {
-// 				badTriangles = append(badTriangles, tri)
-// 			}
-// 		}
+	return remainingTriangles
+}
 
-// 		polygon := uniqueEdges(badTriangles) // find the boundary of the polygonal hole
+func triangulate(stars []Vertex) []Triangle {
 
-// 		newTriangulation := make([]Triangle, len(triangulation))
-// 		for _, Tri := range triangulation {
-// 			add := true
-// 			for _, badTri := range badTriangles {
-// 				if badTri == Tri {
-// 					add = false
-// 					break
-// 				}
-// 			}
+	st := superTriangle(stars)
 
-// 			if add {
-// 				newTriangulation = append(newTriangulation, Tri)
-// 			}
-// 		}
-// 		triangulation = newTriangulation
+	triangulation := make([]Triangle, len(stars))
+	triangulation = append(triangulation, st)
 
-// 		for _, e := range polygon {
-// 			newTri := Triangle{point, e.v1, e.v2}
-// 			triangulation = append(triangulation, newTri)
-// 		}
+	for _, point := range stars {
+		badTriangles := make([]Triangle, 1)
 
-// 	}
+		for _, tri := range triangulation {
+			if inCircumcircle(tri, point) {
+				badTriangles = append(badTriangles, tri)
+			}
+		}
 
-// 	// // remove big triangle
-// 	// finalTriangulation := make([]Triangle, len(triangulation))
-// 	// for _, tri := range triangulation {
-// 	// 	edges := [3]Edge{
-// 	// 		{tri.v0, tri.v1},
-// 	// 		{tri.v1, tri.v2},
-// 	// 		{tri.v2, tri.v0},
-// 	// 	}
+		polygon := uniqueEdges(badTriangles) // find the boundary of the polygonal hole
 
-// 	// 	for _, edge := range edges {
-// 	// 		if edge == stEdges[0] || edge == stEdges[1] || edge == stEdges[2] {
-// 	// 			break
-// 	// 		}
-// 	// 	}
-// 	// }
+		newTriangulation := make([]Triangle, len(triangulation)) // remove bad triangles from triangulation
+		for _, tri := range triangulation {
+			add := true
+			for _, badTri := range badTriangles {
+				if badTri == tri {
+					add = false
+					break
+				}
+			}
 
-// 	// return finalTriangulation
+			if add {
+				newTriangulation = append(newTriangulation, tri)
+			}
+		}
+		triangulation = newTriangulation
 
-// 	return triangulation
+		for _, edge := range polygon {
+			newTri := Triangle{point, edge.v0, edge.v1}
+			triangulation = append(triangulation, newTri)
+		}
+	}
 
-// }
+	return removeSuperTriangle(triangulation, st)
+}
 
-// // https://www.gorillasun.de/blog/bowyer-watson-algorithm-for-delaunay-triangulation/
-// // https://www.desmos.com/calculator/0waviug7kx
+// https://www.gorillasun.de/blog/bowyer-watson-algorithm-for-delaunay-triangulation/
+// https://www.desmos.com/calculator/0waviug7kx

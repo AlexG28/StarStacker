@@ -139,9 +139,47 @@ func TestUniqueEdge(t *testing.T) {
 	expectedUniques := 7
 
 	if len(res) != expectedUniques {
-		t.Errorf("Expected %v uniques but got %v", expectedUniques, res)
+		t.Errorf("Expected %v uniques but got %v", expectedUniques, len(res))
+	}
+}
+
+func TestRemoveSuperTriangle(t *testing.T) {
+	triangles := make([]Triangle, 4)
+
+	triangles[0] = Triangle{
+		Vertex{0, 0},
+		Vertex{1, 1},
+		Vertex{1, 2},
+	}
+	triangles[1] = Triangle{
+		Vertex{1, 1},
+		Vertex{1, 2},
+		Vertex{2, 1},
+	}
+	triangles[2] = Triangle{
+		Vertex{1, 2},
+		Vertex{2, 1},
+		Vertex{4, 4},
 	}
 
+	triangles[2] = Triangle{
+		Vertex{2, 1},
+		Vertex{4, 4},
+		Vertex{3, 8},
+	}
+
+	st := Triangle{
+		Vertex{3, 8},
+		Vertex{-10, -10},
+		Vertex{10, -10},
+	}
+
+	res := removeSuperTriangle(triangles, st)
+	expected := 3
+
+	if len(res) != expected {
+		t.Errorf("Got a length of %v but expecting %v", len(res), expected)
+	}
 }
 
 // func TestTriangulation(t *testing.T) {
