@@ -6,37 +6,20 @@ import (
 )
 
 func TestTriangulate(t *testing.T) {
-	stars := make([]star, 3)
-
-	stars[0] = star{
-		id: 1,
-		points: [][2]int{
-			{10, 10},
-		},
-		location: [2]int{10, 10},
-	}
-	stars[1] = star{
-		id: 2,
-		points: [][2]int{
-			{20, 20},
-		},
-		location: [2]int{20, 20},
-	}
-	stars[2] = star{
-		id: 3,
-		points: [][2]int{
-			{10, 20},
-		},
-		location: [2]int{10, 20},
-	}
-
 	expected := Triangle{
 		Vertex{15, 1020},
 		Vertex{-990, -990},
 		Vertex{1020, -990},
 	}
 
-	result := superTriangle(stars)
+	stars := [3]Vertex{
+		{10, 10},
+		{20, 20},
+		{10, 20},
+	}
+	starSlice := stars[:]
+
+	result := superTriangle(starSlice)
 
 	if expected != result {
 		t.Errorf("result: %v      expected: %v", result, expected)
@@ -131,3 +114,48 @@ func TestInCircumcircle(t *testing.T) {
 		t.Errorf("Incorrect inCircumcircle: %v    expected: %v", res, expected)
 	}
 }
+
+func TestUniqueEdge(t *testing.T) {
+	badTriangles := make([]Triangle, 3)
+
+	badTriangles[0] = Triangle{
+		Vertex{0, 0},
+		Vertex{1, 1},
+		Vertex{1, 2},
+	}
+	badTriangles[1] = Triangle{
+		Vertex{1, 1},
+		Vertex{1, 2},
+		Vertex{2, 1},
+	}
+	badTriangles[2] = Triangle{
+		Vertex{1, 2},
+		Vertex{2, 1},
+		Vertex{4, 4},
+	}
+
+	res := uniqueEdges(badTriangles)
+
+	expectedUniques := 7
+
+	if len(res) != expectedUniques {
+		t.Errorf("Expected %v uniques but got %v", expectedUniques, res)
+	}
+
+}
+
+// func TestTriangulation(t *testing.T) {
+// 	stars := make([]Vertex, 5)
+
+// 	stars[0] = Vertex{0, 0}
+// 	stars[1] = Vertex{1, 0}
+// 	stars[2] = Vertex{0, 1}
+// 	stars[3] = Vertex{1, 1}
+// 	stars[4] = Vertex{2, 2}
+
+// 	result := triangulate(stars)
+
+// 	if len(result) == 0 {
+// 		t.Errorf("It didn't fucking work :(")
+// 	}
+// }

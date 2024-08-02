@@ -1,6 +1,10 @@
 package main
 
-import "math"
+import (
+	"fmt"
+	"math"
+	"sort"
+)
 
 type Comparable interface {
 	Equals(other interface{}) bool
@@ -27,6 +31,19 @@ func (e Edge) Equals(other interface{}) bool {
 			e.v0.Equals(otherEdge.v1) && e.v1.Equals(otherEdge.v0)
 	}
 	return false
+}
+
+func (e Edge) Hash() string {
+	points := []Vertex{e.v0, e.v1}
+
+	sort.Slice(points, func(i, j int) bool {
+		if points[i].X == points[j].X {
+			return points[i].Y < points[j].Y
+		}
+		return points[i].X < points[j].X
+	})
+
+	return fmt.Sprintf("%v,%v-%v,%v", points[0].X, points[0].Y, points[1].X, points[1].Y)
 }
 
 type Triangle struct {
@@ -57,12 +74,12 @@ func vertexDistance(v1, v2 Vertex) float64 {
 	return math.Sqrt(d1 + d2)
 }
 
-func superTriangle(stars []star) Triangle {
+func superTriangle(stars []Vertex) Triangle {
 	minx, miny, maxx, maxy := math.Inf(1), math.Inf(1), math.Inf(-1), math.Inf(-1)
 
 	for _, star := range stars {
-		x := float64(star.location[0])
-		y := float64(star.location[1])
+		x := star.X
+		y := star.Y
 
 		minx = math.Min(minx, x)
 		miny = math.Min(miny, y)
@@ -112,30 +129,117 @@ func inCircumcircle(tri Triangle, p Vertex) bool {
 	return distance <= radius
 }
 
-func addVertex(star Vertex, triangles []Triangle) []Triangle {
-	// edges := make([]Edge, 20)
+// func uniqueEdge(tri Triangle, badTriangles []Triangle) bool {
+// 	edges := [3]Edge{
+// 		{tri.v0, tri.v1},
+// 		{tri.v1, tri.v2},
+// 		{tri.v2, tri.v0},
+// 	}
 
-	return triangles
-}
+// 	for _, edge := range edges {
 
-func triangulate(stars []star) []Triangle {
-	st := superTriangle(stars)
+// 		for _, other := range badTriangles {
+// 			if other == tri {
+// 				continue
+// 			}
 
-	triangles := make([]Triangle, len(stars))
-	triangles = append(triangles, st)
+// 			e0 := Edge{other.v0, other.v1}
+// 			e1 := Edge{other.v1, other.v2}
+// 			e2 := Edge{other.v2, other.v0}
 
-	for _, star := range stars {
-		point := Vertex{
-			float64(star.location[0]),
-			float64(star.location[1]),
+// 			if edge == e0 || edge == e1 || edge == e2 {
+// 				return true
+// 			}
+// 		}
+// 	}
+// 	return false
+// }
+
+func uniqueEdges(badTriangles []Triangle) []Edge {
+	uniques := make(map[string]struct{})
+	var uniqueEdges []Edge
+
+	for _, tri := range badTriangles {
+		edges := []Edge{
+			{tri.v0, tri.v1},
+			{tri.v1, tri.v2},
+			{tri.v2, tri.v0},
 		}
-		triangles = addVertex(point, triangles)
+
+		for _, edge := range edges {
+			hash := edge.Hash()
+			if _, exists := uniques[hash]; !exists {
+				uniques[hash] = struct{}{}
+				uniqueEdges = append(uniqueEdges, edge)
+			}
+		}
 	}
 
-	// remove triangles that share edges with super triangle
-
-	return triangles
+	return uniqueEdges
 }
 
-// https://www.gorillasun.de/blog/bowyer-watson-algorithm-for-delaunay-triangulation/
-// https://www.desmos.com/calculator/0waviug7kx
+// func triangulate(stars []Vertex) []Triangle {
+
+// 	st := superTriangle(stars)
+
+// 	triangulation := make([]Triangle, len(stars))
+// 	triangulation = append(triangulation, st)
+
+// 	for _, point := range stars {
+// 		badTriangles := make([]Triangle, 1)
+
+// 		for _, tri := range triangulation {
+// 			if inCircumcircle(tri, point) {
+// 				badTriangles = append(badTriangles, tri)
+// 			}
+// 		}
+
+// 		polygon := uniqueEdges(badTriangles) // find the boundary of the polygonal hole
+
+// 		newTriangulation := make([]Triangle, len(triangulation))
+// 		for _, Tri := range triangulation {
+// 			add := true
+// 			for _, badTri := range badTriangles {
+// 				if badTri == Tri {
+// 					add = false
+// 					break
+// 				}
+// 			}
+
+// 			if add {
+// 				newTriangulation = append(newTriangulation, Tri)
+// 			}
+// 		}
+// 		triangulation = newTriangulation
+
+// 		for _, e := range polygon {
+// 			newTri := Triangle{point, e.v1, e.v2}
+// 			triangulation = append(triangulation, newTri)
+// 		}
+
+// 	}
+
+// 	// // remove big triangle
+// 	// finalTriangulation := make([]Triangle, len(triangulation))
+// 	// for _, tri := range triangulation {
+// 	// 	edges := [3]Edge{
+// 	// 		{tri.v0, tri.v1},
+// 	// 		{tri.v1, tri.v2},
+// 	// 		{tri.v2, tri.v0},
+// 	// 	}
+
+// 	// 	for _, edge := range edges {
+// 	// 		if edge == stEdges[0] || edge == stEdges[1] || edge == stEdges[2] {
+// 	// 			break
+// 	// 		}
+// 	// 	}
+// 	// }
+
+// 	// return finalTriangulation
+
+// 	return triangulation
+
+// }
+
+// // https://www.gorillasun.de/blog/bowyer-watson-algorithm-for-delaunay-triangulation/
+// // https://www.desmos.com/calculator/0waviug7kx
