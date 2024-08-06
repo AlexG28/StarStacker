@@ -63,6 +63,19 @@ func (t Triangle) Equals(other interface{}) bool {
 	return true
 }
 
+func (t Triangle) Hash() string {
+	points := []Vertex{t.v0, t.v1, t.v2}
+
+	sort.Slice(points, func(i, j int) bool {
+		if points[i].X == points[j].X {
+			return points[i].Y < points[j].Y
+		}
+		return points[i].X < points[j].X
+	})
+
+	return fmt.Sprintf("%v,%v-%v,%v-%v,%v", points[0].X, points[0].Y, points[1].X, points[1].Y, points[2].X, points[2].Y)
+}
+
 func vertexDistance(v1, v2 Vertex) float64 {
 	d1 := math.Pow(v1.X-v2.X, 2)
 	d2 := math.Pow(v1.Y-v2.Y, 2)

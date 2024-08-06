@@ -5,6 +5,41 @@ import (
 	"testing"
 )
 
+func triangleToMap(t []Triangle) map[string]struct{} {
+	hashes := make(map[string]struct{})
+	for _, tri := range t {
+		hash := tri.Hash()
+		hashes[hash] = struct{}{}
+	}
+	return hashes
+}
+
+func sameArrayOFTriangles(t1, t2 []Triangle) bool {
+	len1 := len(t1)
+	len2 := len(t2)
+
+	if len1 != len2 {
+		return false
+	}
+
+	t1dict := triangleToMap(t1)
+	t2dict := triangleToMap(t2)
+
+	for hash, _ := range t1dict {
+		if _, ok := t2dict[hash]; !ok {
+			return false
+		}
+	}
+
+	for hash, _ := range t2dict {
+		if _, ok := t1dict[hash]; !ok {
+			return false
+		}
+	}
+
+	return true
+}
+
 func TestTriangulate(t *testing.T) {
 	expected := Triangle{
 		Vertex{15, 1020},
@@ -185,12 +220,15 @@ func TestRemoveBadTriangles(t *testing.T) {
 		Vertex{2, 1},
 	}
 
-	res := removeBadTrianglesFromTriangulation(triangulation, badTriangles)
+	result := removeBadTrianglesFromTriangulation(triangulation, badTriangles)
 
-	expectedUniques := 2
+	expected := []Triangle{
+		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
+		{Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}},
+	}
 
-	if len(res) != expectedUniques {
-		t.Errorf("Expected %v uniques but got %v", expectedUniques, len(res))
+	if !sameArrayOFTriangles(result, expected) {
+		t.Errorf("Expected %v uniques but got %v", expected, result)
 	}
 }
 
@@ -213,7 +251,7 @@ func TestRemoveSuperTriangle(t *testing.T) {
 		Vertex{4, 4},
 	}
 
-	triangles[2] = Triangle{
+	triangles[3] = Triangle{
 		Vertex{2, 1},
 		Vertex{4, 4},
 		Vertex{3, 8},
@@ -225,11 +263,15 @@ func TestRemoveSuperTriangle(t *testing.T) {
 		Vertex{10, -10},
 	}
 
-	res := removeSuperTriangle(triangles, st)
-	expected := 3
+	result := removeSuperTriangle(triangles, st)
+	expected := []Triangle{
+		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
+		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
+		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
+	}
 
-	if len(res) != expected {
-		t.Errorf("Got a length of %v but expecting %v", len(res), expected)
+	if !sameArrayOFTriangles(result, expected) {
+		t.Errorf("Got a length of %v but expecting %v", result, expected)
 	}
 }
 
@@ -241,10 +283,12 @@ func TestTriangulationBasic(t *testing.T) {
 	stars[2] = Vertex{2, 5}
 
 	result := triangulate(stars)
-	expected := 1
+	expected := []Triangle{
+		{Vertex{0, 0}, Vertex{5, 2}, Vertex{2, 5}},
+	}
 
-	if len(result) != expected {
-		t.Errorf("Result: %v   expected: %v", len(result), expected)
+	if !sameArrayOFTriangles(result, expected) {
+		t.Errorf("Result: %v   expected: %v", result, expected)
 	}
 }
 
@@ -257,10 +301,13 @@ func TestTriangulationMedium(t *testing.T) {
 	stars[3] = Vertex{5, 17}
 
 	result := triangulate(stars)
-	expected := 2
+	expected := []Triangle{
+		{Vertex{-10, 8}, Vertex{0, 0}, Vertex{5, 17}},
+		{Vertex{0, 0}, Vertex{4, 1}, Vertex{5, 17}},
+	}
 
-	if len(result) != expected {
-		t.Errorf("Result: %v   expected: %v", len(result), expected)
+	if !sameArrayOFTriangles(expected, result) {
+		t.Errorf("Result: %v   expected: %v", result, expected)
 	}
 }
 
@@ -274,10 +321,17 @@ func TestTriangulationAdvanced(t *testing.T) {
 	stars[4] = Vertex{8, 2}
 	stars[5] = Vertex{9, 14}
 
-	result := triangulate(stars)
-	expected := 5
+	expected := []Triangle{
+		{Vertex{0, 0}, Vertex{0, 8}, Vertex{4, 1}},
+		{Vertex{0, 8}, Vertex{4, 1}, Vertex{5, 7}},
+		{Vertex{4, 1}, Vertex{8, 2}, Vertex{5, 7}},
+		{Vertex{0, 8}, Vertex{5, 7}, Vertex{9, 14}},
+		{Vertex{5, 7}, Vertex{8, 2}, Vertex{9, 14}},
+	}
 
-	if len(result) != expected {
-		t.Errorf("Result: %v   expected: %v", len(result), expected)
+	result := triangulate(stars)
+
+	if !sameArrayOFTriangles(result, expected) {
+		t.Errorf("Result: %v   expected: %v", result, expected)
 	}
 }
