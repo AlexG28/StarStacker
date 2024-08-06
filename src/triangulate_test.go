@@ -151,27 +151,11 @@ func TestInCircumcircle(t *testing.T) {
 }
 
 func TestBoundaryOfPolygonalHole(t *testing.T) {
-	badTriangles := make([]Triangle, 4)
-
-	badTriangles[0] = Triangle{
-		Vertex{0, 0},
-		Vertex{1, 1},
-		Vertex{1, 2},
-	}
-	badTriangles[1] = Triangle{
-		Vertex{1, 1},
-		Vertex{1, 2},
-		Vertex{2, 1},
-	}
-	badTriangles[2] = Triangle{
-		Vertex{1, 2},
-		Vertex{2, 1},
-		Vertex{4, 4},
-	}
-	badTriangles[3] = Triangle{
-		Vertex{4, 4},
-		Vertex{2, 1},
-		Vertex{7, 1},
+	badTriangles := []Triangle{
+		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
+		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
+		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
+		{Vertex{4, 4}, Vertex{2, 1}, Vertex{7, 1}},
 	}
 
 	res := boundaryOfPolygonalHole(badTriangles)
@@ -184,40 +168,16 @@ func TestBoundaryOfPolygonalHole(t *testing.T) {
 }
 
 func TestRemoveBadTriangles(t *testing.T) {
-	triangulation := make([]Triangle, 4)
-
-	triangulation[0] = Triangle{
-		Vertex{0, 0},
-		Vertex{1, 1},
-		Vertex{1, 2},
-	}
-	triangulation[1] = Triangle{
-		Vertex{1, 1},
-		Vertex{1, 2},
-		Vertex{2, 1},
-	}
-	triangulation[2] = Triangle{
-		Vertex{1, 2},
-		Vertex{2, 1},
-		Vertex{4, 4},
-	}
-	triangulation[3] = Triangle{
-		Vertex{3, 0},
-		Vertex{0, 0},
-		Vertex{1, 1},
+	triangulation := []Triangle{
+		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
+		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
+		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
+		{Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}},
 	}
 
-	badTriangles := make([]Triangle, 2)
-
-	badTriangles[0] = Triangle{
-		Vertex{0, 0},
-		Vertex{1, 1},
-		Vertex{1, 2},
-	}
-	badTriangles[1] = Triangle{
-		Vertex{1, 1},
-		Vertex{1, 2},
-		Vertex{2, 1},
+	badTriangles := []Triangle{
+		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
+		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
 	}
 
 	result := removeBadTrianglesFromTriangulation(triangulation, badTriangles)
@@ -233,28 +193,11 @@ func TestRemoveBadTriangles(t *testing.T) {
 }
 
 func TestRemoveSuperTriangle(t *testing.T) {
-	triangles := make([]Triangle, 4)
-
-	triangles[0] = Triangle{
-		Vertex{0, 0},
-		Vertex{1, 1},
-		Vertex{1, 2},
-	}
-	triangles[1] = Triangle{
-		Vertex{1, 1},
-		Vertex{1, 2},
-		Vertex{2, 1},
-	}
-	triangles[2] = Triangle{
-		Vertex{1, 2},
-		Vertex{2, 1},
-		Vertex{4, 4},
-	}
-
-	triangles[3] = Triangle{
-		Vertex{2, 1},
-		Vertex{4, 4},
-		Vertex{3, 8},
+	triangles := []Triangle{
+		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
+		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
+		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
+		{Vertex{2, 1}, Vertex{4, 4}, Vertex{3, 8}},
 	}
 
 	st := Triangle{
