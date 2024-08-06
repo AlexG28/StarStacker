@@ -115,8 +115,8 @@ func TestInCircumcircle(t *testing.T) {
 	}
 }
 
-func TestUniqueEdge(t *testing.T) {
-	badTriangles := make([]Triangle, 3)
+func TestBoundaryOfPolygonalHole(t *testing.T) {
+	badTriangles := make([]Triangle, 4)
 
 	badTriangles[0] = Triangle{
 		Vertex{0, 0},
@@ -133,10 +133,61 @@ func TestUniqueEdge(t *testing.T) {
 		Vertex{2, 1},
 		Vertex{4, 4},
 	}
+	badTriangles[3] = Triangle{
+		Vertex{4, 4},
+		Vertex{2, 1},
+		Vertex{7, 1},
+	}
 
-	res := uniqueEdges(badTriangles)
+	res := boundaryOfPolygonalHole(badTriangles)
 
-	expectedUniques := 7
+	expectedUniques := 6
+
+	if len(res) != expectedUniques {
+		t.Errorf("Expected %v uniques but got %v", expectedUniques, len(res))
+	}
+}
+
+func TestRemoveBadTriangles(t *testing.T) {
+	triangulation := make([]Triangle, 4)
+
+	triangulation[0] = Triangle{
+		Vertex{0, 0},
+		Vertex{1, 1},
+		Vertex{1, 2},
+	}
+	triangulation[1] = Triangle{
+		Vertex{1, 1},
+		Vertex{1, 2},
+		Vertex{2, 1},
+	}
+	triangulation[2] = Triangle{
+		Vertex{1, 2},
+		Vertex{2, 1},
+		Vertex{4, 4},
+	}
+	triangulation[3] = Triangle{
+		Vertex{3, 0},
+		Vertex{0, 0},
+		Vertex{1, 1},
+	}
+
+	badTriangles := make([]Triangle, 2)
+
+	badTriangles[0] = Triangle{
+		Vertex{0, 0},
+		Vertex{1, 1},
+		Vertex{1, 2},
+	}
+	badTriangles[1] = Triangle{
+		Vertex{1, 1},
+		Vertex{1, 2},
+		Vertex{2, 1},
+	}
+
+	res := removeBadTrianglesFromTriangulation(triangulation, badTriangles)
+
+	expectedUniques := 2
 
 	if len(res) != expectedUniques {
 		t.Errorf("Expected %v uniques but got %v", expectedUniques, len(res))
@@ -182,18 +233,51 @@ func TestRemoveSuperTriangle(t *testing.T) {
 	}
 }
 
-// func TestTriangulation(t *testing.T) {
-// 	stars := make([]Vertex, 5)
+func TestTriangulationBasic(t *testing.T) {
+	stars := make([]Vertex, 3)
 
-// 	stars[0] = Vertex{0, 0}
-// 	stars[1] = Vertex{1, 0}
-// 	stars[2] = Vertex{0, 1}
-// 	stars[3] = Vertex{1, 1}
-// 	stars[4] = Vertex{2, 2}
+	stars[0] = Vertex{0, 0}
+	stars[1] = Vertex{5, 2}
+	stars[2] = Vertex{2, 5}
 
-// 	result := triangulate(stars)
+	result := triangulate(stars)
+	expected := 1
 
-// 	if len(result) == 0 {
-// 		t.Errorf("It didn't fucking work :(")
-// 	}
-// }
+	if len(result) != expected {
+		t.Errorf("Result: %v   expected: %v", len(result), expected)
+	}
+}
+
+func TestTriangulationMedium(t *testing.T) {
+	stars := make([]Vertex, 4)
+
+	stars[0] = Vertex{0, 0}
+	stars[1] = Vertex{-10, 8}
+	stars[2] = Vertex{4, 1}
+	stars[3] = Vertex{5, 17}
+
+	result := triangulate(stars)
+	expected := 2
+
+	if len(result) != expected {
+		t.Errorf("Result: %v   expected: %v", len(result), expected)
+	}
+}
+
+func TestTriangulationAdvanced(t *testing.T) {
+	stars := make([]Vertex, 6)
+
+	stars[0] = Vertex{0, 0}
+	stars[1] = Vertex{0, 8}
+	stars[2] = Vertex{4, 1}
+	stars[3] = Vertex{5, 7}
+	stars[4] = Vertex{8, 2}
+	stars[5] = Vertex{9, 14}
+
+	result := triangulate(stars)
+	expected := 5
+
+	if len(result) != expected {
+		t.Errorf("Result: %v   expected: %v", len(result), expected)
+	}
+}

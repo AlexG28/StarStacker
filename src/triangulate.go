@@ -63,10 +63,6 @@ func (t Triangle) Equals(other interface{}) bool {
 	return true
 }
 
-func (t Triangle) inCircumcircle(other Vertex) bool {
-	return false
-}
-
 func vertexDistance(v1, v2 Vertex) float64 {
 	d1 := math.Pow(v1.X-v2.X, 2)
 	d2 := math.Pow(v1.Y-v2.Y, 2)
@@ -129,9 +125,8 @@ func inCircumcircle(tri Triangle, p Vertex) bool {
 	return distance <= radius
 }
 
-func uniqueEdges(badTriangles []Triangle) []Edge {
-	uniques := make(map[string]struct{})
-	var uniqueEdges []Edge
+func calculateEdgeCount(badTriangles []Triangle) map[string]int { // double check this. This is wrong!!!!
+	edgeCount := make(map[string]int)
 
 	for _, tri := range badTriangles {
 		edges := []Edge{
@@ -142,14 +137,33 @@ func uniqueEdges(badTriangles []Triangle) []Edge {
 
 		for _, edge := range edges {
 			hash := edge.Hash()
-			if _, exists := uniques[hash]; !exists {
-				uniques[hash] = struct{}{}
-				uniqueEdges = append(uniqueEdges, edge)
+			edgeCount[hash]++
+		}
+	}
+
+	return edgeCount
+}
+
+func boundaryOfPolygonalHole(badTriangles []Triangle) []Edge { // should be good?
+	edgeCount := calculateEdgeCount(badTriangles)
+	var singlyUsedEdges []Edge
+
+	for _, tri := range badTriangles {
+		edges := []Edge{
+			{tri.v0, tri.v1},
+			{tri.v1, tri.v2},
+			{tri.v2, tri.v0},
+		}
+
+		for _, edge := range edges {
+			hash := edge.Hash()
+			if count := edgeCount[hash]; count == 1 {
+				singlyUsedEdges = append(singlyUsedEdges, edge)
 			}
 		}
 	}
 
-	return uniqueEdges
+	return singlyUsedEdges
 }
 
 func shareVertex(currVertices, superEdges []Vertex) bool {
@@ -178,39 +192,42 @@ func removeSuperTriangle(triangles []Triangle, st Triangle) []Triangle {
 	return remainingTriangles
 }
 
+func removeBadTrianglesFromTriangulation(triangulation, badTriangles []Triangle) []Triangle { // this is wrong???
+	output := make([]Triangle, 0)
+
+	for _, tri := range triangulation {
+		add := true
+		for _, badTri := range badTriangles {
+			if tri == badTri {
+				add = false
+				break
+			}
+		}
+
+		if add {
+			output = append(output, tri)
+		}
+	}
+	return output
+}
+
 func triangulate(stars []Vertex) []Triangle {
 
 	st := superTriangle(stars)
 
-	triangulation := make([]Triangle, len(stars))
+	triangulation := make([]Triangle, 0)
 	triangulation = append(triangulation, st)
 
 	for _, point := range stars {
-		badTriangles := make([]Triangle, 1)
+		badTriangles := make([]Triangle, 0)
 
 		for _, tri := range triangulation {
 			if inCircumcircle(tri, point) {
 				badTriangles = append(badTriangles, tri)
 			}
 		}
-
-		polygon := uniqueEdges(badTriangles) // find the boundary of the polygonal hole
-
-		newTriangulation := make([]Triangle, len(triangulation)) // remove bad triangles from triangulation
-		for _, tri := range triangulation {
-			add := true
-			for _, badTri := range badTriangles {
-				if badTri == tri {
-					add = false
-					break
-				}
-			}
-
-			if add {
-				newTriangulation = append(newTriangulation, tri)
-			}
-		}
-		triangulation = newTriangulation
+		polygon := boundaryOfPolygonalHole(badTriangles)
+		triangulation = removeBadTrianglesFromTriangulation(triangulation, badTriangles)
 
 		for _, edge := range polygon {
 			newTri := Triangle{point, edge.v0, edge.v1}
@@ -220,6 +237,3 @@ func triangulate(stars []Vertex) []Triangle {
 
 	return removeSuperTriangle(triangulation, st)
 }
-
-// https://www.gorillasun.de/blog/bowyer-watson-algorithm-for-delaunay-triangulation/
-// https://www.desmos.com/calculator/0waviug7kx
