@@ -138,7 +138,7 @@ func inCircumcircle(tri Triangle, p Vertex) bool {
 	return distance <= radius
 }
 
-func calculateEdgeCount(badTriangles []Triangle) map[string]int { // double check this. This is wrong!!!!
+func calculateEdgeCount(badTriangles []Triangle) map[string]int {
 	edgeCount := make(map[string]int)
 
 	for _, tri := range badTriangles {
@@ -157,7 +157,7 @@ func calculateEdgeCount(badTriangles []Triangle) map[string]int { // double chec
 	return edgeCount
 }
 
-func boundaryOfPolygonalHole(badTriangles []Triangle) []Edge { // should be good?
+func boundaryOfPolygonalHole(badTriangles []Triangle) []Edge {
 	edgeCount := calculateEdgeCount(badTriangles)
 	var singlyUsedEdges []Edge
 
@@ -205,7 +205,7 @@ func removeSuperTriangle(triangles []Triangle, st Triangle) []Triangle {
 	return remainingTriangles
 }
 
-func removeBadTrianglesFromTriangulation(triangulation, badTriangles []Triangle) []Triangle { // this is wrong???
+func removeBadTrianglesFromTriangulation(triangulation, badTriangles []Triangle) []Triangle {
 	output := make([]Triangle, 0)
 
 	for _, tri := range triangulation {

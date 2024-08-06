@@ -2,6 +2,7 @@ package main
 
 import (
 	"math"
+	"math/rand/v2"
 	"testing"
 )
 
@@ -38,6 +39,19 @@ func sameArrayOFTriangles(t1, t2 []Triangle) bool {
 	}
 
 	return true
+}
+
+func generateRandomPoints(n int) []Vertex {
+	points := make([]Vertex, n)
+
+	for i := 0; i < n; i++ {
+		points[i] = Vertex{
+			X: rand.Float64() * 100,
+			Y: rand.Float64() * 100,
+		}
+	}
+
+	return points
 }
 
 func TestTriangulate(t *testing.T) {
@@ -276,5 +290,15 @@ func TestTriangulationAdvanced(t *testing.T) {
 
 	if !sameArrayOFTriangles(result, expected) {
 		t.Errorf("Result: %v   expected: %v", result, expected)
+	}
+}
+
+func BenchmarkTriangulation(b *testing.B) {
+	points := generateRandomPoints(1000)
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		triangulate(points)
 	}
 }
