@@ -83,6 +83,11 @@ func NewTriangle(v0, v1, v2 Vertex) Triangle {
 	return Triangle{v0, v1, v2, c, r}
 }
 
+func NewTriangleDict(v0, v1, v2 Vertex) (key string, value Triangle) {
+	t := NewTriangle(v0, v1, v2)
+	return t.Hash(), t
+}
+
 func vertexDistance(v1, v2 Vertex) float64 {
 	d1 := math.Pow(v1.X-v2.X, 2)
 	d2 := math.Pow(v1.Y-v2.Y, 2)
@@ -143,7 +148,7 @@ func inCircumcircle(tri Triangle, p Vertex) bool {
 	return distance <= radius
 }
 
-func calculateEdgeCount(badTriangles []Triangle) map[string]int {
+func calculateEdgeCount(badTriangles map[string]Triangle) map[string]int {
 	edgeCount := make(map[string]int)
 
 	for _, tri := range badTriangles {
@@ -162,7 +167,7 @@ func calculateEdgeCount(badTriangles []Triangle) map[string]int {
 	return edgeCount
 }
 
-func boundaryOfPolygonalHole(badTriangles []Triangle) []Edge {
+func boundaryOfPolygonalHole(badTriangles map[string]Triangle) []Edge {
 	edgeCount := calculateEdgeCount(badTriangles)
 	var singlyUsedEdges []Edge
 
@@ -195,7 +200,7 @@ func shareVertex(currVertices, superEdges []Vertex) bool {
 	return false
 }
 
-func removeSuperTriangle(triangles []Triangle, st Triangle) []Triangle {
+func removeSuperTriangle(triangles map[string]Triangle, st Triangle) []Triangle {
 	remainingTriangles := make([]Triangle, 0)
 	superVertices := []Vertex{st.v0, st.v1, st.v2}
 
@@ -210,49 +215,36 @@ func removeSuperTriangle(triangles []Triangle, st Triangle) []Triangle {
 	return remainingTriangles
 }
 
-func removeBadTrianglesFromTriangulation(triangulation, badTriangles []Triangle) []Triangle {
-	output := make([]Triangle, 0)
-
-	for _, tri := range triangulation {
-		add := true
-		for _, badTri := range badTriangles {
-			if tri == badTri {
-				add = false
-				break
-			}
-		}
-
-		if add {
-			output = append(output, tri)
-		}
+func removeBadTrianglesFromTriangulation(triangulation, badTriangles map[string]Triangle) map[string]Triangle {
+	for hash, _ := range badTriangles {
+		delete(triangulation, hash)
 	}
-	return output
+
+	return triangulation
 }
 
 func triangulate(stars []Vertex) []Triangle {
-
 	st := superTriangle(stars)
 
-	triangulation := make([]Triangle, 0)
-	triangulation = append(triangulation, st)
+	triangulationDict := make(map[string]Triangle)
+	triangulationDict[st.Hash()] = st
 
 	for _, point := range stars {
-		badTriangles := make([]Triangle, 0)
+		badTriangles := make(map[string]Triangle, 0)
 
-		for _, tri := range triangulation {
+		for _, tri := range triangulationDict {
 			if inCircumcircle(tri, point) {
-				badTriangles = append(badTriangles, tri)
+				badTriangles[tri.Hash()] = tri
 			}
 		}
 		polygon := boundaryOfPolygonalHole(badTriangles)
-		triangulation = removeBadTrianglesFromTriangulation(triangulation, badTriangles)
+		triangulationDict = removeBadTrianglesFromTriangulation(triangulationDict, badTriangles)
 
 		for _, edge := range polygon {
 			newTri := NewTriangle(point, edge.v0, edge.v1)
-
-			triangulation = append(triangulation, newTri)
+			triangulationDict[newTri.Hash()] = newTri
 		}
 	}
 
-	return removeSuperTriangle(triangulation, st)
+	return removeSuperTriangle(triangulationDict, st)
 }

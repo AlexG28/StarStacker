@@ -26,13 +26,13 @@ func sameArrayOFTriangles(t1, t2 []Triangle) bool {
 	t1dict := triangleToMap(t1)
 	t2dict := triangleToMap(t2)
 
-	for hash, _ := range t1dict {
+	for hash := range t1dict {
 		if _, ok := t2dict[hash]; !ok {
 			return false
 		}
 	}
 
-	for hash, _ := range t2dict {
+	for hash := range t2dict {
 		if _, ok := t1dict[hash]; !ok {
 			return false
 		}
@@ -52,6 +52,22 @@ func generateRandomPoints(n int) []Vertex {
 	}
 
 	return points
+}
+
+func arrayOfTrianglesToMap(triangles []Triangle) map[string]Triangle {
+	out := make(map[string]Triangle)
+	for _, tri := range triangles {
+		out[tri.Hash()] = tri
+	}
+	return out
+}
+
+func mapOfTrianglesToArray(trimap map[string]Triangle) []Triangle {
+	out := make([]Triangle, 0)
+	for _, tri := range trimap {
+		out = append(out, tri)
+	}
+	return out
 }
 
 func TestTriangulate(t *testing.T) {
@@ -158,7 +174,7 @@ func TestBoundaryOfPolygonalHole(t *testing.T) {
 		NewTriangle(Vertex{4, 4}, Vertex{2, 1}, Vertex{7, 1}),
 	}
 
-	res := boundaryOfPolygonalHole(badTriangles)
+	res := boundaryOfPolygonalHole(arrayOfTrianglesToMap(badTriangles))
 
 	expectedUniques := 6
 
@@ -180,14 +196,15 @@ func TestRemoveBadTriangles(t *testing.T) {
 		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
 	}
 
-	result := removeBadTrianglesFromTriangulation(triangulation, badTriangles)
+	result := removeBadTrianglesFromTriangulation(
+		arrayOfTrianglesToMap(triangulation), arrayOfTrianglesToMap(badTriangles))
 
 	expected := []Triangle{
 		NewTriangle(Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}),
 		NewTriangle(Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}),
 	}
 
-	if !sameArrayOFTriangles(result, expected) {
+	if !sameArrayOFTriangles(mapOfTrianglesToArray(result), expected) {
 		t.Errorf("Expected %v uniques but got %v", expected, result)
 	}
 }
@@ -206,7 +223,7 @@ func TestRemoveSuperTriangle(t *testing.T) {
 		Vertex{10, -10},
 	)
 
-	result := removeSuperTriangle(triangles, st)
+	result := removeSuperTriangle(arrayOfTrianglesToMap(triangles), st)
 	expected := []Triangle{
 		NewTriangle(Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}),
 		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
@@ -288,3 +305,8 @@ func BenchmarkTriangulation(b *testing.B) {
 		triangulate(points)
 	}
 }
+
+// func TestTriangulation(t *testing.T) {
+// 	points := generateRandomPoints(1000)
+// 	triangulate(points)
+// }
