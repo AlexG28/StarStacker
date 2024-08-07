@@ -48,6 +48,8 @@ func (e Edge) Hash() string {
 
 type Triangle struct {
 	v0, v1, v2 Vertex
+	c          Vertex
+	r          float64
 }
 
 func (t Triangle) Equals(other interface{}) bool {
@@ -74,6 +76,11 @@ func (t Triangle) Hash() string {
 	})
 
 	return fmt.Sprintf("%v,%v-%v,%v-%v,%v", points[0].X, points[0].Y, points[1].X, points[1].Y, points[2].X, points[2].Y)
+}
+
+func NewTriangle(v0, v1, v2 Vertex) Triangle {
+	c, r := circumCenter(v0, v1, v2)
+	return Triangle{v0, v1, v2, c, r}
 }
 
 func vertexDistance(v1, v2 Vertex) float64 {
@@ -103,14 +110,12 @@ func superTriangle(stars []Vertex) Triangle {
 	v1 := Vertex{minx - (dx * 100), miny - (dy * 100)}
 	v2 := Vertex{maxx + (dx * 100), miny - (dy * 100)}
 
-	return Triangle{v0, v1, v2}
+	c, r := circumCenter(v0, v1, v2)
+
+	return Triangle{v0, v1, v2, c, r}
 }
 
-func circumCenter(tri Triangle) (Vertex, float64) {
-	a := tri.v0
-	b := tri.v1
-	c := tri.v2
-
+func circumCenter(a, b, c Vertex) (Vertex, float64) {
 	d := 2 * ((a.X * (b.Y - c.Y)) + (b.X * (c.Y - a.Y)) + (c.X * (a.Y - b.Y)))
 
 	centerpoint := Vertex{}
@@ -133,7 +138,7 @@ func circumCenter(tri Triangle) (Vertex, float64) {
 }
 
 func inCircumcircle(tri Triangle, p Vertex) bool {
-	center, radius := circumCenter(tri)
+	center, radius := tri.c, tri.r
 	distance := vertexDistance(p, center)
 	return distance <= radius
 }
@@ -243,7 +248,8 @@ func triangulate(stars []Vertex) []Triangle {
 		triangulation = removeBadTrianglesFromTriangulation(triangulation, badTriangles)
 
 		for _, edge := range polygon {
-			newTri := Triangle{point, edge.v0, edge.v1}
+			newTri := NewTriangle(point, edge.v0, edge.v1)
+
 			triangulation = append(triangulation, newTri)
 		}
 	}

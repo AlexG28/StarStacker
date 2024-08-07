@@ -55,11 +55,11 @@ func generateRandomPoints(n int) []Vertex {
 }
 
 func TestTriangulate(t *testing.T) {
-	expected := Triangle{
+	expected := NewTriangle(
 		Vertex{15, 1020},
 		Vertex{-990, -990},
 		Vertex{1020, -990},
-	}
+	)
 
 	stars := [3]Vertex{
 		{10, 10},
@@ -78,13 +78,7 @@ func TestTriangulate(t *testing.T) {
 
 func TestCircumCircle(t *testing.T) {
 	epsilon := 1e-6
-	tri := Triangle{
-		Vertex{3, 4},
-		Vertex{5, 9},
-		Vertex{4, 8},
-	}
-
-	center, radius := circumCenter(tri)
+	center, radius := circumCenter(Vertex{3, 4}, Vertex{5, 9}, Vertex{4, 8})
 
 	expectedCenter := Vertex{8.166667, 4.833333}
 	expectedRadius := 5.233439
@@ -102,13 +96,9 @@ func TestCircumCircle(t *testing.T) {
 
 func TestCircumCircleSmall(t *testing.T) {
 	epsilon := 1e-6
-	degenerateTri := Triangle{
-		Vertex{5.567926, 5.567156},
+	center, radius := circumCenter(Vertex{5.567926, 5.567156},
 		Vertex{5.567122, 5.567826},
-		Vertex{5.567555, 5.567000},
-	}
-
-	center, radius := circumCenter(degenerateTri)
+		Vertex{5.567555, 5.567000})
 
 	expectedCenter := Vertex{5.56755247276, 5.56752516732}
 	expectedRadius := 0.000525173404322
@@ -126,13 +116,9 @@ func TestCircumCircleSmall(t *testing.T) {
 
 func TestCircumCircleLarge(t *testing.T) {
 	epsilon := 1e-6
-	degenerateTri := Triangle{
-		Vertex{187, 41},
+	center, radius := circumCenter(Vertex{187, 41},
 		Vertex{557, 666},
-		Vertex{972, 420},
-	}
-
-	center, radius := circumCenter(degenerateTri)
+		Vertex{972, 420})
 
 	expectedCenter := Vertex{579.391836356, 230.724032877}
 	expectedRadius := 435.851536524
@@ -149,11 +135,11 @@ func TestCircumCircleLarge(t *testing.T) {
 }
 
 func TestInCircumcircle(t *testing.T) {
-	tri := Triangle{
+	tri := NewTriangle(
 		Vertex{3, 4},
 		Vertex{5, 9},
 		Vertex{4, 8},
-	}
+	)
 	point := Vertex{10, 20}
 
 	res := inCircumcircle(tri, point)
@@ -166,10 +152,10 @@ func TestInCircumcircle(t *testing.T) {
 
 func TestBoundaryOfPolygonalHole(t *testing.T) {
 	badTriangles := []Triangle{
-		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
-		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
-		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
-		{Vertex{4, 4}, Vertex{2, 1}, Vertex{7, 1}},
+		NewTriangle(Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}),
+		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
+		NewTriangle(Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}),
+		NewTriangle(Vertex{4, 4}, Vertex{2, 1}, Vertex{7, 1}),
 	}
 
 	res := boundaryOfPolygonalHole(badTriangles)
@@ -183,22 +169,22 @@ func TestBoundaryOfPolygonalHole(t *testing.T) {
 
 func TestRemoveBadTriangles(t *testing.T) {
 	triangulation := []Triangle{
-		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
-		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
-		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
-		{Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}},
+		NewTriangle(Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}),
+		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
+		NewTriangle(Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}),
+		NewTriangle(Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}),
 	}
 
 	badTriangles := []Triangle{
-		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
-		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
+		NewTriangle(Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}),
+		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
 	}
 
 	result := removeBadTrianglesFromTriangulation(triangulation, badTriangles)
 
 	expected := []Triangle{
-		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
-		{Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}},
+		NewTriangle(Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}),
+		NewTriangle(Vertex{3, 0}, Vertex{0, 0}, Vertex{1, 1}),
 	}
 
 	if !sameArrayOFTriangles(result, expected) {
@@ -208,23 +194,23 @@ func TestRemoveBadTriangles(t *testing.T) {
 
 func TestRemoveSuperTriangle(t *testing.T) {
 	triangles := []Triangle{
-		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
-		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
-		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
-		{Vertex{2, 1}, Vertex{4, 4}, Vertex{3, 8}},
+		NewTriangle(Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}),
+		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
+		NewTriangle(Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}),
+		NewTriangle(Vertex{2, 1}, Vertex{4, 4}, Vertex{3, 8}),
 	}
 
-	st := Triangle{
+	st := NewTriangle(
 		Vertex{3, 8},
 		Vertex{-10, -10},
 		Vertex{10, -10},
-	}
+	)
 
 	result := removeSuperTriangle(triangles, st)
 	expected := []Triangle{
-		{Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}},
-		{Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}},
-		{Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}},
+		NewTriangle(Vertex{0, 0}, Vertex{1, 1}, Vertex{1, 2}),
+		NewTriangle(Vertex{1, 1}, Vertex{1, 2}, Vertex{2, 1}),
+		NewTriangle(Vertex{1, 2}, Vertex{2, 1}, Vertex{4, 4}),
 	}
 
 	if !sameArrayOFTriangles(result, expected) {
@@ -241,7 +227,7 @@ func TestTriangulationBasic(t *testing.T) {
 
 	result := triangulate(stars)
 	expected := []Triangle{
-		{Vertex{0, 0}, Vertex{5, 2}, Vertex{2, 5}},
+		NewTriangle(Vertex{0, 0}, Vertex{5, 2}, Vertex{2, 5}),
 	}
 
 	if !sameArrayOFTriangles(result, expected) {
@@ -259,8 +245,8 @@ func TestTriangulationMedium(t *testing.T) {
 
 	result := triangulate(stars)
 	expected := []Triangle{
-		{Vertex{-10, 8}, Vertex{0, 0}, Vertex{5, 17}},
-		{Vertex{0, 0}, Vertex{4, 1}, Vertex{5, 17}},
+		NewTriangle(Vertex{-10, 8}, Vertex{0, 0}, Vertex{5, 17}),
+		NewTriangle(Vertex{0, 0}, Vertex{4, 1}, Vertex{5, 17}),
 	}
 
 	if !sameArrayOFTriangles(expected, result) {
@@ -279,11 +265,11 @@ func TestTriangulationAdvanced(t *testing.T) {
 	stars[5] = Vertex{9, 14}
 
 	expected := []Triangle{
-		{Vertex{0, 0}, Vertex{0, 8}, Vertex{4, 1}},
-		{Vertex{0, 8}, Vertex{4, 1}, Vertex{5, 7}},
-		{Vertex{4, 1}, Vertex{8, 2}, Vertex{5, 7}},
-		{Vertex{0, 8}, Vertex{5, 7}, Vertex{9, 14}},
-		{Vertex{5, 7}, Vertex{8, 2}, Vertex{9, 14}},
+		NewTriangle(Vertex{0, 0}, Vertex{0, 8}, Vertex{4, 1}),
+		NewTriangle(Vertex{0, 8}, Vertex{4, 1}, Vertex{5, 7}),
+		NewTriangle(Vertex{4, 1}, Vertex{8, 2}, Vertex{5, 7}),
+		NewTriangle(Vertex{0, 8}, Vertex{5, 7}, Vertex{9, 14}),
+		NewTriangle(Vertex{5, 7}, Vertex{8, 2}, Vertex{9, 14}),
 	}
 
 	result := triangulate(stars)
