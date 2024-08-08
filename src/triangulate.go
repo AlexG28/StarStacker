@@ -226,25 +226,25 @@ func removeBadTrianglesFromTriangulation(triangulation, badTriangles map[string]
 func triangulate(stars []Vertex) []Triangle {
 	st := superTriangle(stars)
 
-	triangulationDict := make(map[string]Triangle)
-	triangulationDict[st.Hash()] = st
+	triangulation := make(map[string]Triangle)
+	triangulation[st.Hash()] = st
 
 	for _, point := range stars {
 		badTriangles := make(map[string]Triangle, 0)
 
-		for _, tri := range triangulationDict {
+		for _, tri := range triangulation {
 			if inCircumcircle(tri, point) {
 				badTriangles[tri.Hash()] = tri
 			}
 		}
 		polygon := boundaryOfPolygonalHole(badTriangles)
-		triangulationDict = removeBadTrianglesFromTriangulation(triangulationDict, badTriangles)
+		triangulation = removeBadTrianglesFromTriangulation(triangulation, badTriangles)
 
 		for _, edge := range polygon {
 			newTri := NewTriangle(point, edge.v0, edge.v1)
-			triangulationDict[newTri.Hash()] = newTri
+			triangulation[newTri.Hash()] = newTri
 		}
 	}
 
-	return removeSuperTriangle(triangulationDict, st)
+	return removeSuperTriangle(triangulation, st)
 }

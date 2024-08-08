@@ -46,8 +46,8 @@ func generateRandomPoints(n int) []Vertex {
 
 	for i := 0; i < n; i++ {
 		points[i] = Vertex{
-			X: rand.Float64() * 100,
-			Y: rand.Float64() * 100,
+			X: rand.Float64() * 10000,
+			Y: rand.Float64() * 10000,
 		}
 	}
 
