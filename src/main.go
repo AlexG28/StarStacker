@@ -34,5 +34,7 @@ func main() {
 	count := len(*stars)
 	fmt.Printf("count: %v\n", count)
 
+	// triangles := triangularize(*stars)
+
 	saveStarPoints("stars", stars)
 }
