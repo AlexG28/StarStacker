@@ -252,6 +252,16 @@ func TestTriangulationBasic(t *testing.T) {
 	}
 }
 
+func TestNewTriangle(t *testing.T) {
+	expected := []Triangle{
+		NewTriangle(Vertex{0, 0}, Vertex{5, 2}, Vertex{2, 5}),
+	}
+
+	if len(expected) != 1 {
+		t.Errorf("wtfff????")
+	}
+}
+
 func TestTriangulationMedium(t *testing.T) {
 	stars := make([]Vertex, 4)
 
