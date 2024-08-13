@@ -11,23 +11,21 @@ func (t1 *translation) equalTranslation(t2 translation) bool {
 }
 
 func findTranslation(main, secondary []Triangle) translation {
-	tri := main[0]
-	currentLowest := math.MaxFloat32
-	var currClosestTri Triangle
-	var new float64
+	mainTri := main[0]
+	smallestDifference := math.Inf(1)
+	var closestTri Triangle
+	var difference float64
 
 	for _, secondTri := range secondary {
-		new = tri.smallestDifference(secondTri)
-		if new < currentLowest {
-			currClosestTri = secondTri
-			currentLowest = new
+		difference = mainTri.smallestDifference(secondTri)
+		if difference < smallestDifference {
+			closestTri = secondTri
+			smallestDifference = difference
 		}
 	}
 
-	distanceX := currClosestTri.c.X - tri.c.X
-	distanceY := currClosestTri.c.Y - tri.c.Y
+	distanceX := closestTri.c.X - mainTri.c.X
+	distanceY := closestTri.c.Y - mainTri.c.Y
 
-	translate := translation{distanceX, distanceY}
-	return translate
-
+	return translation{distanceX, distanceY}
 }
