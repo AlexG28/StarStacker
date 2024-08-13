@@ -65,7 +65,7 @@ func (t Triangle) Equals(other interface{}) bool {
 	return true
 }
 
-func (t Triangle) Hash() string {
+func (t Triangle) SortPoints() []Vertex {
 	points := []Vertex{t.v0, t.v1, t.v2}
 
 	sort.Slice(points, func(i, j int) bool {
@@ -75,12 +75,47 @@ func (t Triangle) Hash() string {
 		return points[i].X < points[j].X
 	})
 
+	return points
+}
+
+func (t Triangle) Hash() string {
+	points := t.SortPoints()
+
 	return fmt.Sprintf("%v,%v-%v,%v-%v,%v", points[0].X, points[0].Y, points[1].X, points[1].Y, points[2].X, points[2].Y)
+}
+
+func (t1 Triangle) smallestDifference(t2 Triangle) float64 {
+
+	points1 := t1.SortPoints()
+	points2 := t2.SortPoints()
+
+	distances1 := []float64{
+		vertexDistance(points1[0], points1[1]),
+		vertexDistance(points1[1], points1[2]),
+		vertexDistance(points1[2], points1[0]),
+	}
+
+	distances2 := []float64{
+		vertexDistance(points2[0], points2[1]),
+		vertexDistance(points2[1], points2[2]),
+		vertexDistance(points2[2], points2[0]),
+	}
+
+	diff := 0.0
+
+	diff += math.Abs(distances1[0] - distances2[0])
+	diff += math.Abs(distances1[1] - distances2[1])
+	diff += math.Abs(distances1[2] - distances2[2])
+
+	return diff
+
 }
 
 func NewTriangle(v0, v1, v2 Vertex) Triangle {
 	c, r := circumCenter(v0, v1, v2)
-	return Triangle{v0, v1, v2, c, r}
+	t := Triangle{v0, v1, v2, c, r}
+	t.SortPoints()
+	return t
 }
 
 func NewTriangleDict(v0, v1, v2 Vertex) (key string, value Triangle) {
