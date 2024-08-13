@@ -3,23 +3,31 @@ package main
 import "math"
 
 type translation struct {
-	vertical, horizontal float32
+	vertical, horizontal float64
+}
+
+func (t1 *translation) equalTranslation(t2 translation) bool {
+	return t1.horizontal == t2.horizontal && t1.vertical == t2.vertical
 }
 
 func findTranslation(main, secondary []Triangle) translation {
-	/*
-		take first, middle, last triangles from secondary, and find their closest triangles in main
-	*/
-
 	tri := main[0]
 	currentLowest := math.MaxFloat32
+	var currClosestTri Triangle
+	var new float64
 
 	for _, secondTri := range secondary {
-		new := tri.smallestDifference(secondTri)
-		currentLowest = min(new, currentLowest)
+		new = tri.smallestDifference(secondTri)
+		if new < currentLowest {
+			currClosestTri = secondTri
+			currentLowest = new
+		}
 	}
 
-	translate := translation{0.0, 0.0}
+	distanceX := currClosestTri.c.X - tri.c.X
+	distanceY := currClosestTri.c.Y - tri.c.Y
+
+	translate := translation{distanceX, distanceY}
 	return translate
 
 }
