@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"testing"
@@ -29,11 +30,21 @@ func TestBasicMerge(t *testing.T) {
 
 	transformation1 := translation{1, 2}
 
+	expectedPoints := map[string]string{}
+
+	expectedPoints["2,1"] = "true"
+	expectedPoints["3,1"] = "true"
+	expectedPoints["4,1"] = "true"
+	expectedPoints["2,2"] = "true"
+	expectedPoints["3,2"] = "true"
+	expectedPoints["4,2"] = "true"
+	expectedPoints["3,3"] = "true"
+
 	res := stack(transformation1, img1, img2)
-
 	sizes := res.Bounds()
-
-	whiteColours := 0
+	whiteColours := 7
+	failed := false
+	var hash string
 	for y := sizes.Min.Y; y < sizes.Max.Y; y++ {
 		for x := sizes.Min.X; x < sizes.Max.X; x++ {
 			colour := res.At(x, y)
@@ -43,6 +54,13 @@ func TestBasicMerge(t *testing.T) {
 			b = b / 257
 
 			if r == 127 && g == 127 && b == 127 {
+
+				hash = fmt.Sprintf("%v,%v", x, y)
+				if _, that := expectedPoints[hash]; !that {
+					failed = true
+					break
+				}
+
 				whiteColours += 1
 			}
 		}
@@ -50,7 +68,7 @@ func TestBasicMerge(t *testing.T) {
 
 	expected := 7
 
-	if whiteColours != expected {
+	if whiteColours != expected && failed {
 		t.Errorf("Expected: %v    Got: %v", expected, whiteColours)
 	}
 
