@@ -15,6 +15,15 @@ func (s *star) print() string {
 	return fmt.Sprintf("ID: %v\n location: (%v, %v)\n\n", s.id, s.location[0], s.location[1])
 }
 
+func starsToVertices(stars []star) []Vertex {
+	vertices := make([]Vertex, len(stars))
+	for i := 0; i < len(stars); i++ {
+
+		vertices[i] = Vertex{float64(stars[i].location[0]), float64(stars[i].location[1])}
+	}
+	return vertices
+}
+
 func countStars(img *image.Gray) *[]star {
 	bounds := img.Bounds()
 	visited := *createVisited(bounds.Max.X, bounds.Max.Y)
