@@ -15,9 +15,9 @@ def shift_image(image_path, output_path, x, y):
 
 
 if __name__ == "__main__": 
-    image_path = "/home/alexlinux/projects/StarCounter/testfiles/example2.png"
-    save_path = "/home/alexlinux/projects/StarCounter/testfiles/example2shifted.png"
-    x_shift = 10
-    y_shift = 20
+    image_path = "/home/alexlinux/projects/StarCounter/testfiles/example.png"
+    save_path = "/home/alexlinux/projects/StarCounter/testfiles/exampleShifted.png"
+    x_shift = 20
+    y_shift = 0
 
     shift_image(image_path, save_path, x_shift, y_shift)

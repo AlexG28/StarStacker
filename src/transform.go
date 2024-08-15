@@ -27,5 +27,5 @@ func findTranslation(main, secondary []Triangle) translation {
 	distanceX := closestTri.c.X - mainTri.c.X
 	distanceY := closestTri.c.Y - mainTri.c.Y
 
-	return translation{distanceX, distanceY}
+	return translation{distanceY, distanceX}
 }
