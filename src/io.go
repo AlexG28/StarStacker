@@ -24,7 +24,7 @@ func writeOutput(text string, filename string) error {
 	return nil
 }
 
-func saveOutputImage(img *image.Gray, filename string) error {
+func saveOutputImage(img image.Image, filename string) error {
 	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.png", filename)
 
 	file, err := os.Create(filepath)
