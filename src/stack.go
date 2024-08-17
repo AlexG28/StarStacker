@@ -32,9 +32,7 @@ func stack(trans translation, baseImg, sideImg image.Image) image.Image {
 			a := uint8((a1/257 + a2/257) / 2)
 
 			output.Set(x, y, color.RGBA{r, g, b, a})
-
 		}
 	}
-
 	return output
 }

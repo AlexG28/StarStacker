@@ -18,7 +18,6 @@ func (s *star) print() string {
 func starsToVertices(stars []star) []Vertex {
 	vertices := make([]Vertex, len(stars))
 	for i := 0; i < len(stars); i++ {
-
 		vertices[i] = Vertex{float64(stars[i].location[0]), float64(stars[i].location[1])}
 	}
 	return vertices

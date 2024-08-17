@@ -23,7 +23,6 @@ func main() {
 	stackedImage := stack(translation, image1, image2)
 
 	saveOutputImage(stackedImage, "output")
-
 }
 
 func openFile(filename string) ([]Triangle, image.Image) {
