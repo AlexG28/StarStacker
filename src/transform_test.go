@@ -34,16 +34,16 @@ func TestTranslationMedium(t *testing.T) {
 	}
 
 	triangles2 := []Triangle{
-		NewTriangle(Vertex{2, 0.5}, Vertex{3, 0.5}, Vertex{3, 1.5}),
-		NewTriangle(Vertex{3, 0.5}, Vertex{4, 0.5}, Vertex{3, 1.5}),
-		NewTriangle(Vertex{3, 1.5}, Vertex{4, 0.5}, Vertex{4, 1.5}),
-		NewTriangle(Vertex{2, 0.5}, Vertex{3, 1.5}, Vertex{2, 1.5}),
-		NewTriangle(Vertex{2, 1.5}, Vertex{3, 1.5}, Vertex{3, 2.5}),
+		NewTriangle(Vertex{2, -1}, Vertex{3, -1}, Vertex{3, 0}),
+		NewTriangle(Vertex{3, -1}, Vertex{4, -1}, Vertex{3, 0}),
+		NewTriangle(Vertex{3, 0}, Vertex{4, -1}, Vertex{4, 0}),
+		NewTriangle(Vertex{2, -1}, Vertex{3, 0}, Vertex{2, 0}),
+		NewTriangle(Vertex{2, 0}, Vertex{3, 0}, Vertex{3, 1}),
 	}
 
 	res := findTranslation(triangles1, triangles2)
 
-	expected := translation{0.5, 2.0}
+	expected := translation{-1.0, 2.0}
 
 	if !res.equalTranslation(expected) {
 		t.Errorf("Expected: %v %v    Got: %v %v", expected.horizontal, expected.vertical, res.horizontal, res.vertical)
