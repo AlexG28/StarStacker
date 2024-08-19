@@ -58,8 +58,7 @@ func findSmallestDifferenceBetweenTriangleAndTriangulation(base Triangle, second
 func translationBetweenTwoTriangles(otherTri, baseTri Triangle) translation {
 	distanceX := otherTri.c.X - baseTri.c.X
 	distanceY := otherTri.c.Y - baseTri.c.Y
-
-	return translation{distanceY, distanceX}
+	return translation{math.Round(distanceY), math.Round(distanceX)}
 }
 
 func generate3RandomUniqueTriangleIndices(mainLength int) (int, int, int) {

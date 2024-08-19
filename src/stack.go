@@ -9,19 +9,15 @@ func stack(trans translation, baseImg, sideImg image.Image) image.Image {
 	baseImageSize := baseImg.Bounds()
 	sideImgSize := sideImg.Bounds()
 
-	sideImgSize.Min.X = sideImgSize.Min.X + int(trans.horizontal)
-	sideImgSize.Max.X = sideImgSize.Max.X + int(trans.horizontal)
-
-	sideImgSize.Min.Y = sideImgSize.Min.Y + int(trans.vertical)
-	sideImgSize.Max.Y = sideImgSize.Max.Y + int(trans.vertical)
-
 	resultBounds := baseImageSize.Intersect(sideImgSize)
 	output := image.NewRGBA(resultBounds)
 
 	for y := resultBounds.Min.Y; y < resultBounds.Max.Y; y++ {
 		for x := resultBounds.Min.X; x < resultBounds.Max.X; x++ {
-			c1 := baseImg.At(x-int(trans.horizontal), y-int(trans.vertical))
-			c2 := sideImg.At(x, y)
+			sideImgX, sideImgY := x+int(trans.horizontal), y+int(trans.vertical)
+
+			c1 := baseImg.At(x, y)
+			c2 := sideImg.At(sideImgX, sideImgY)
 
 			r1, g1, b1, a1 := c1.RGBA()
 			r2, g2, b2, a2 := c2.RGBA()
