@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -16,31 +17,36 @@ func main() {
 		log.Fatal("Please enter only 1 directory")
 	}
 
-	imageFiles := process(argsWithProg[0])
+	imageFiles := collectImageFiles(argsWithProg[0])
 	numberOfFiles := len(imageFiles)
 
-	trianglesArray := make([][]Triangle, numberOfFiles)
-	imageArray := make([]image.Image, numberOfFiles)
+	triangulations := make([][]Triangle, numberOfFiles)
+	images := make([]image.Image, numberOfFiles)
 
+	var wg sync.WaitGroup
 	for i, filePath := range imageFiles {
-		triangles, image := openFile(filePath)
-
-		trianglesArray[i] = triangles
-		imageArray[i] = image
+		wg.Add(1)
+		go func(i int, filePath string) {
+			defer wg.Done()
+			triangulation, image := openFile(filePath)
+			triangulations[i] = triangulation
+			images[i] = image
+		}(i, filePath)
 	}
+	wg.Wait()
 
-	baseTriangles := trianglesArray[0]
+	referenceTriangulation := triangulations[0]
 	translations := make([]translation, numberOfFiles-1)
 
 	for i := 1; i < numberOfFiles; i++ {
-		currTranslation := findTranslation(baseTriangles, trianglesArray[i])
+		currTranslation := findTranslation(referenceTriangulation, triangulations[i])
 		translations[i-1] = currTranslation
 	}
 
-	stackedImage := imageArray[0]
+	stackedImage := images[0]
 
 	for i := 1; i < numberOfFiles; i++ {
-		stackedImage = stack(translations[i-1], stackedImage, imageArray[i])
+		stackedImage = stack(translations[i-1], stackedImage, images[i])
 	}
 
 	saveOutputImage(stackedImage, "output")
@@ -73,7 +79,7 @@ func openFile(filePath string) ([]Triangle, image.Image) {
 	return triangles, img
 }
 
-func process(dirPath string) []string {
+func collectImageFiles(dirPath string) []string {
 	dir, err := os.Open(dirPath)
 
 	output := make([]string, 0)
