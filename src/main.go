@@ -4,34 +4,61 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"log"
 	"os"
+	"strings"
+	"sync"
 )
 
 func main() {
 	argsWithProg := os.Args[1:]
 
-	if len(argsWithProg) != 2 {
-		fmt.Println("Please enter 2 filenames")
-		os.Exit(1)
+	if len(argsWithProg) != 1 {
+		log.Fatal("Please enter only 1 directory")
 	}
 
-	triangles1, image1 := openFile(argsWithProg[0])
-	triangles2, image2 := openFile(argsWithProg[1])
+	imageFiles := collectImageFiles(argsWithProg[0])
+	numberOfFiles := len(imageFiles)
 
-	translation := findTranslation(triangles1, triangles2)
+	triangulations := make([][]Triangle, numberOfFiles)
+	images := make([]image.Image, numberOfFiles)
 
-	stackedImage := stack(translation, image1, image2)
+	var wg sync.WaitGroup
+	for i, filePath := range imageFiles {
+		wg.Add(1)
+		go func(i int, filePath string) {
+			defer wg.Done()
+			triangulation, image := openFile(filePath)
+			triangulations[i] = triangulation
+			images[i] = image
+		}(i, filePath)
+	}
+	wg.Wait()
+
+	referenceTriangulation := triangulations[0]
+	translations := make([]translation, numberOfFiles-1)
+
+	for i := 1; i < numberOfFiles; i++ {
+		currTranslation := findTranslation(referenceTriangulation, triangulations[i])
+		translations[i-1] = currTranslation
+	}
+
+	stackedImage := images[0]
+
+	for i := 1; i < numberOfFiles; i++ {
+		stackedImage = stack(translations[i-1], stackedImage, images[i])
+	}
 
 	saveOutputImage(stackedImage, "output")
+
+	fmt.Println("Done!")
 }
 
-func openFile(filename string) ([]Triangle, image.Image) {
-	filepath := fmt.Sprintf("/home/alexlinux/projects/StarCounter/testfiles/%s.png", filename)
-
-	file, err := os.Open(filepath)
+func openFile(filePath string) ([]Triangle, image.Image) {
+	file, err := os.Open(filePath)
 
 	if err != nil {
-		fmt.Printf("Unable to open file %v", filename)
+		fmt.Printf("Unable to open file %v", filePath)
 		os.Exit(1)
 	}
 
@@ -40,7 +67,7 @@ func openFile(filename string) ([]Triangle, image.Image) {
 	img, err := png.Decode(file)
 
 	if err != nil {
-		fmt.Printf("Unable to decode file %v", filename)
+		fmt.Printf("Unable to decode file %v", filePath)
 		os.Exit(1)
 	}
 
@@ -50,4 +77,30 @@ func openFile(filename string) ([]Triangle, image.Image) {
 	triangles := triangulate(vertices)
 
 	return triangles, img
+}
+
+func collectImageFiles(dirPath string) []string {
+	dir, err := os.Open(dirPath)
+
+	output := make([]string, 0)
+
+	if err != nil {
+		log.Fatalf("Failed to open directory: %v", err)
+	}
+	defer dir.Close()
+
+	files, err := dir.ReadDir(-1)
+
+	if err != nil {
+		log.Fatalf("Failed to read directory: %v", err)
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			if strings.HasSuffix(file.Name(), ".png") {
+				output = append(output, fmt.Sprintf("%s/%s", dirPath, file.Name()))
+			}
+		}
+	}
+	return output
 }
