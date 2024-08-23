@@ -7,6 +7,7 @@ This is the same algorithm used by telescopes and astrophotography modes in smar
 ## How to use StarStacker: 
 - use StarStacker by compiling the code with `go build .` in the `/src` directory. This will produce a `.exe` file. 
 - once a binary is made, call the binary with `./src <filepath>` with the filepath being the filepath to the directory where your night sky images are located
+- StarStacker currently only supports PNG images to pngs lack of loss in image quality
 
 ## How does StarStacker work? 
 - Starstacker contains multiple steps listed below: 
