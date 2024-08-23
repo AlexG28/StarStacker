@@ -1,14 +1,26 @@
-# Starcounter 
+# StarStacker
 
-## What is starcounter 
-Starcounter is a program that calculates the number of stars in a photo 
+## What is StarStacker
+StarStacker is a program that stacks a number (at least 2) night sky images on top of one another in order to produce a cleaner image as its output
+This is the same algorithm used by telescopes and astrophotography modes in smartphones
 
-## How to use starcounter: 
-- use starcounter by compiling the code with `go build .`
-- once a binary is made, call the binary with `./app filename` with filename being the name of the file you want to process 
+## How to use StarStacker: 
+- use StarStacker by compiling the code with `go build .` in the `/src` directory. This will produce a `.exe` file. 
+- once a binary is made, call the binary with `./src <filepath>` with the filepath being the filepath to the directory where your night sky images are located
 
-## How does starcounter work? 
-- starcounter works by first processing the given input image by raising its contrast and turning it into a binary black or white photo with all brighht (star) pixels
-above a certain threshold being white and all other pixels being dark. 
-- once this binary image is achieved, a connected component labeling algorithm is ran on this binary image which calculates the location and the count of every cluster of white 
-pixels (stars). This information is saved to a `stars.txt` file
+## How does StarStacker work? 
+- Starstacker contains multiple steps listed below: 
+1. Each given png file is preprocessed by passing it pixel by pixel and setting all 'star' pixels to 1 and all other pixels to 1. 
+2. The binary sky images are passed into a CCL algorithm which maps out every individual star and saves the locations of each star to an array
+3. A delauney triangulation algorithm is ran on the array of points from step 2 in order to create a triangulation of all the stars in the image 
+4. A reference image is chosen and the translation is calculated based on the difference between the reference image's triangulation and all 
+other images' triangulations. 
+5. Once all translations are calculated, each image is stacked on top of the reference image which each pixels' RGB values being averaged out. 
+6. The stacked image is saved. 
+
+## Notable limitations 
+- The delauney triangulation algorithm implementation in StarStacker is suboptimal with a complexity of O(n^2). It is possible to reduce this value to 
+at least O(nlogn) however this would significantly increase the complexity of the project without a meaningful increase in its performance besides 
+processing speed. For furhter information see this [post](https://stackoverflow.com/questions/40934453/implementing-bowyer-watson-algorithm-for-delaunay-triangulation/59582271#59582271)
+- The translation calculation only takes into account linear translations with no consideration for zoom or rotation
+- only PNG files are supported
