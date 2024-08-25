@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	"image/png"
@@ -82,7 +83,7 @@ func openFile(filePath string) ([]Triangle, image.Image) {
 func collectImageFiles(dirPath string) []string {
 	dir, err := os.Open(dirPath)
 
-	output := make([]string, 0)
+	imageList := make([]string, 0)
 
 	if err != nil {
 		log.Fatalf("Failed to open directory: %v", err)
@@ -98,9 +99,30 @@ func collectImageFiles(dirPath string) []string {
 	for _, file := range files {
 		if !file.IsDir() {
 			if strings.HasSuffix(file.Name(), ".png") {
-				output = append(output, fmt.Sprintf("%s/%s", dirPath, file.Name()))
+				imageList = append(imageList, fmt.Sprintf("%s/%s", dirPath, file.Name()))
 			}
 		}
 	}
-	return output
+
+	index, err := findBaseImage(imageList)
+
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	imageList[0], imageList[index] = imageList[index], imageList[0]
+
+	return imageList
+}
+
+func findBaseImage(imageNames []string) (int, error) {
+	for i, img := range imageNames {
+		splitString := strings.Split(img, "/")
+		lastElement := splitString[len(splitString)-1]
+
+		if strings.HasPrefix(lastElement, "base") {
+			return i, nil
+		}
+	}
+	return -1, errors.New("no base image specified. Please prefix an image file of your choise with 'base'")
 }

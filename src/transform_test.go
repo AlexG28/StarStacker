@@ -16,7 +16,7 @@ func TestTranslationBasic(t *testing.T) {
 
 	res := findTranslation(triangles1, triangles2)
 
-	expected := translation{0.0, 1.0}
+	expected := translation{1.0, 0.0}
 
 	if !res.equalTranslation(expected) {
 		t.Errorf("Expected: %v %v    Got: %v %v", expected.horizontal, expected.vertical, res.horizontal, res.vertical)
@@ -43,7 +43,7 @@ func TestTranslationMedium(t *testing.T) {
 
 	res := findTranslation(triangles1, triangles2)
 
-	expected := translation{-1.0, 2.0}
+	expected := translation{2.0, -1.0}
 
 	if !res.equalTranslation(expected) {
 		t.Errorf("Expected: %v %v    Got: %v %v", expected.horizontal, expected.vertical, res.horizontal, res.vertical)

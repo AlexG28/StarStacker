@@ -19,13 +19,13 @@ func stack(trans translation, baseImg, sideImg image.Image) image.Image {
 			c1 := baseImg.At(x, y)
 			c2 := sideImg.At(sideImgX, sideImgY)
 
-			r1, g1, b1, a1 := c1.RGBA()
-			r2, g2, b2, a2 := c2.RGBA()
+			r1, g1, b1, _ := c1.RGBA()
+			r2, g2, b2, _ := c2.RGBA()
 
 			r := uint8((r1/257 + r2/257) / 2)
 			g := uint8((g1/257 + g2/257) / 2)
 			b := uint8((b1/257 + b2/257) / 2)
-			a := uint8((a1/257 + a2/257) / 2)
+			a := uint8(255)
 
 			output.Set(x, y, color.RGBA{r, g, b, a})
 		}

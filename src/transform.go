@@ -6,7 +6,7 @@ import (
 )
 
 type translation struct {
-	vertical, horizontal float64
+	horizontal, vertical float64
 }
 
 func (t1 *translation) equalTranslation(t2 translation) bool {
@@ -58,7 +58,7 @@ func findSmallestDifferenceBetweenTriangleAndTriangulation(base Triangle, second
 func translationBetweenTwoTriangles(otherTri, baseTri Triangle) translation {
 	distanceX := otherTri.c.X - baseTri.c.X
 	distanceY := otherTri.c.Y - baseTri.c.Y
-	return translation{math.Round(distanceY), math.Round(distanceX)}
+	return translation{math.Round(distanceX), math.Round(distanceY)}
 }
 
 func generate3RandomUniqueTriangleIndices(mainLength int) (int, int, int) {

@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestBasicMerge(t *testing.T) {
+func TestBasicStack(t *testing.T) {
 
 	img1 := image.NewRGBA(image.Rect(0, 0, 5, 5))
 	img2 := image.NewRGBA(image.Rect(0, 0, 5, 5))
@@ -28,7 +28,7 @@ func TestBasicMerge(t *testing.T) {
 	img2.Set(4, 1, color.RGBA{0, 255, 255, 255})
 	img2.Set(4, 2, color.RGBA{0, 255, 255, 255})
 
-	transformation1 := translation{1, 2}
+	transformation1 := translation{2, 1}
 
 	expectedPoints := map[string]string{}
 

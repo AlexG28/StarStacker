@@ -29,34 +29,12 @@ def shift_image(image_path, x_shift, y_shift):
         corrected.paste(shifted, mask=shifted.split()[3])
 
         corrected = add_noise(corrected)
-
-
-
-        left = 0
-        right = left + width
-
-        upper = 0
-        lower = upper + height
-
-
-        if x_shift >= 0: 
-            left += x_shift
-        else: 
-            right += x_shift
-
-
-        if y_shift >= 0: 
-            upper += y_shift
-        else: 
-            lower += y_shift
-
-        # shifted = shifted.crop((left, upper, right, lower))
         return corrected
         
 
 def main(): 
-    x_shift = 5
-    y_shift = 5
+    x_shift = -10
+    y_shift = 10
     number_of_images = 1
     image_path = "/home/alexlinux/projects/StarCounter/testfiles/6stars.png"
     image_output_dir = "/home/alexlinux/projects/StarCounter/testfiles"
