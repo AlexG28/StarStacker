@@ -19,6 +19,12 @@ other images' triangulations.
 5. Once all translations are calculated, each image is stacked on top of the reference image which each pixels' RGB values being averaged out. 
 6. The stacked image is saved. 
 
+## Generating sample images 
+- `/validate/shiftImage.py`has been specifically written to generate noisy copies of an input images with the possibility of offsetting them. 
+- Use this script by downloading a random png of the night sky off the internet. Paste in the path of the image into the script code and 
+set all the parameters you want such as noise levels, shift and number of copies as well as the output folder. 
+- Run the script. It will paste the output into the output folder after which you can run StarStacker on that directory. 
+
 ## Notable limitations 
 - The delauney triangulation algorithm implementation in StarStacker is suboptimal with a complexity of O(n^2). It is possible to reduce this value to 
 at least O(nlogn) however this would significantly increase the complexity of the project without a meaningful increase in its performance besides 
